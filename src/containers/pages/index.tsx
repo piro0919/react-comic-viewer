@@ -15,6 +15,12 @@ const Pages: FC = () => (
         "/comics/6.jpg",
       ]}
       switchingRatio={0.75}
+      text={{
+        expansion: "拡大",
+        fullScreen: "全画面",
+        move: "移動",
+        normal: "通常",
+      }}
     />
     <p>
       hoge

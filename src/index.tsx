@@ -31,6 +31,7 @@ import uniqid from "uniqid";
 import {
   BiChevronLeft,
   BiChevronRight,
+  BiCollapse,
   BiExpand,
   BiFullscreen,
   BiMoveHorizontal,
@@ -43,9 +44,23 @@ import { useSwipeable } from "react-swipeable";
 export type ComicViewerProps = {
   pages: Array<string | ReactNode>;
   switchingRatio?: number;
+  text?: Record<"expansion" | "fullScreen" | "move" | "normal", string>;
 };
 
-const ComicViewer: FC<ComicViewerProps> = ({ pages, switchingRatio = 1 }) => {
+const ComicViewer: FC<ComicViewerProps> = ({
+  pages,
+  switchingRatio = 1,
+  text = {
+    expansion: "Expansion",
+    fullScreen: "Full screen",
+    move: "Move",
+    normal: "Normal",
+  },
+}) => {
+  const { expansion: expansionText, fullScreen, move, normal } = useMemo(
+    () => text,
+    [text]
+  );
   const { windowHeight, windowWidth } = useWindowSize();
   const [isExpansion, setIsExpansion] = useState<WrapperProps["isExpansion"]>(
     false
@@ -80,12 +95,17 @@ const ComicViewer: FC<ComicViewerProps> = ({ pages, switchingRatio = 1 }) => {
     [switchingRatio, windowHeight, windowWidth]
   );
   const expansion = useMemo<ComponentPropsWithoutRef<"button">["children"]>(
-    () => (isExpansion ? "通常" : "拡大"),
-    [isExpansion]
+    () => (isExpansion ? normal : expansionText),
+    [expansionText, isExpansion, normal]
   );
-  const fullScreen = useMemo<ComponentPropsWithoutRef<"button">["children"]>(
-    () => (active ? "戻る" : "全画面"),
-    [active]
+  const expansionIcon = useMemo(
+    () =>
+      isExpansion ? (
+        <BiCollapse color="#fff" size={24} />
+      ) : (
+        <BiExpand color="#fff" size={24} />
+      ),
+    [isExpansion]
   );
   const isSingleView = useMemo<ImgProps["isSingleView"]>(
     () => windowHeight > windowWidth * switchingRatio,
@@ -263,7 +283,7 @@ const ComicViewer: FC<ComicViewerProps> = ({ pages, switchingRatio = 1 }) => {
               <MainController>
                 <ScaleController>
                   <ControlButton onClick={handleClickOnExpansion}>
-                    <BiExpand color="#fff" size={24} />
+                    {expansionIcon}
                     {expansion}
                   </ControlButton>
                   <ControlButton onClick={handleClickOnFullScreen}>
@@ -273,7 +293,7 @@ const ComicViewer: FC<ComicViewerProps> = ({ pages, switchingRatio = 1 }) => {
                 </ScaleController>
                 <ControlButton onClick={handleClickOnShowMove}>
                   <BiMoveHorizontal color="#fff" size={24} />
-                  移動
+                  {move}
                 </ControlButton>
               </MainController>
             )}

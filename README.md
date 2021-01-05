@@ -27,7 +27,8 @@ export default App;
 
 ## Return
 
-| Key            | Type                           | Description                    | default |
-| -------------- | ------------------------------ | ------------------------------ | ------- |
-| pages          | Array<string &#124; ReactNode> | Comic Pages                    | -       |
-| switchingRatio | number &#124; undefined        | Ratio to switch to single page | 1       |
+| Key             | Type                                                                          | Description                    | default                                                                               |
+| --------------- | ----------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| pages           | Array<string &#124; ReactNode>                                                | Comic Pages                    | -                                                                                     |
+| switchingRatio? | number                                                                        | Ratio to switch to single page | 1                                                                                     |
+| text?           | Record<"expansion" &#124; "fullScreen" &#124; "move" &#124; "normal", string> | Text displayed                 | { expansion: "Expansion", fullScreen: "Full screen", move: "Move", normal: "Normal" } |
