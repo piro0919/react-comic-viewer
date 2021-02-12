@@ -3,8 +3,8 @@
   "version": "0.1.2",
   "private": false,
   "dependencies": {
-    "@emotion/react": "11.1.4",
-    "@emotion/styled": "11.0.0",
+    "@emotion/react": "11.1.5",
+    "@emotion/styled": "11.1.5",
     "@rooks/use-outside-click-ref": "4.9.1",
     "@use-it/event-listener": "0.1.6",
     "react": "17.0.1",
