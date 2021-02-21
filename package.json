@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "11.1.5",
     "@emotion/styled": "11.1.5",
-    "@rooks/use-outside-click-ref": "4.9.1",
+    "@rooks/use-outside-click-ref": "4.9.2",
     "@use-it/event-listener": "0.1.6",
     "react": "17.0.1",
     "react-full-screen": "0.3.2-0",
