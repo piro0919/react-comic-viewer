@@ -1,73 +1,58 @@
 {
-  "name": "react-comic-viewer",
-  "version": "0.1.4",
-  "private": false,
+  "author": "piro <piro.haniwa@gmail.com> (https://kk-web.link/)",
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/piro0919/react-comic-viewer/issues"
+  },
   "dependencies": {
-    "@emotion/react": "11.1.4",
-    "@emotion/styled": "11.0.0",
-    "@rooks/use-outside-click-ref": "4.5.0",
+    "@emotion/react": "11.1.5",
+    "@emotion/styled": "11.1.5",
+    "@rooks/use-outside-click-ref": "4.10.0",
     "@use-it/event-listener": "0.1.6",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-full-screen": "0.3.2-0",
-    "react-icons": "4.1.0",
+    "react-icons": "4.2.0",
     "react-lazy-load-image-component": "1.5.1",
     "react-no-ssr": "^1.1.0",
-    "react-swipeable": "6.0.1",
-    "uniqid": "5.2.0",
-    "use-debounce": "5.2.0"
+    "react-swipeable": "6.1.0",
+    "uniqid": "5.3.0",
+    "use-debounce": "5.2.1"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "5.11.6",
-    "@testing-library/react": "11.2.2",
-    "@testing-library/user-event": "12.6.0",
-    "@types/jest": "26.0.19",
-    "@types/node": "12.19.11",
-    "@types/react": "16.14.2",
-    "@types/react-dom": "16.9.10",
+    "@testing-library/jest-dom": "5.11.10",
+    "@testing-library/react": "11.2.5",
+    "@testing-library/user-event": "12.8.3",
+    "@types/jest": "26.0.21",
+    "@types/node": "12.20.6",
+    "@types/react": "16.14.5",
+    "@types/react-dom": "16.9.12",
     "@types/react-lazy-load-image-component": "1.5.1",
     "@types/react-no-ssr": "^1.1.1",
-    "@types/uniqid": "5.2.0",
+    "@types/uniqid": "5.3.0",
     "gh-pages": "3.1.0",
     "node-sass": "4.14.1",
     "react-app-rewired": "2.1.8",
-    "react-dom": "17.0.1",
-    "react-scripts": "4.0.1",
-    "typescript": "4.1.3",
+    "react-dom": "17.0.2",
+    "react-scripts": "4.0.3",
+    "typescript": "4.2.3",
     "web-vitals": "0.2.4"
-  },
-  "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject",
-    "build:package": "rm -rf dist && tsc -p tsconfig.gen-dts.json",
-    "deploy": "gh-pages -d build",
-    "predeploy": "npm run build"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "author": "piro <piro.haniwa@gmail.com> (https://kk-web.link/)",
-  "bugs": {
-    "url": "https://github.com/piro0919/react-comic-viewer/issues"
   },
   "homepage": "https://react-comic-viewer.kk-web.link",
   "keywords": [
@@ -77,8 +62,23 @@
     "viewer"
   ],
   "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "name": "react-comic-viewer",
+  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/piro0919/react-comic-viewer.git"
-  }
+  },
+  "scripts": {
+    "build": "react-app-rewired build",
+    "build:package": "rm -rf dist && tsc -p tsconfig.gen-dts.json",
+    "deploy": "gh-pages -d build",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "start": "react-app-rewired start",
+    "test": "react-app-rewired test"
+  },
+  "types": "dist/index.d.ts",
+  "version": "0.1.4"
 }
