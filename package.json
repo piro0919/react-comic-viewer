@@ -1,6 +1,6 @@
 {
   "name": "react-comic-viewer",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "private": false,
   "dependencies": {
     "@emotion/react": "11.1.4",
@@ -11,6 +11,7 @@
     "react-full-screen": "0.3.2-0",
     "react-icons": "4.1.0",
     "react-lazy-load-image-component": "1.5.1",
+    "react-no-ssr": "^1.1.0",
     "react-swipeable": "6.0.1",
     "uniqid": "5.2.0",
     "use-debounce": "5.2.0"
@@ -24,6 +25,7 @@
     "@types/react": "16.14.2",
     "@types/react-dom": "16.9.10",
     "@types/react-lazy-load-image-component": "1.5.1",
+    "@types/react-no-ssr": "^1.1.1",
     "@types/uniqid": "5.2.0",
     "gh-pages": "3.1.0",
     "node-sass": "4.14.1",

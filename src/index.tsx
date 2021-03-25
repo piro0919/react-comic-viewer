@@ -40,6 +40,7 @@ import useOutsideClickRef from "@rooks/use-outside-click-ref";
 import { LazyLoadComponent } from "react-lazy-load-image-component";
 import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
+import NoSSR from "react-no-ssr";
 
 export type ComicViewerProps = {
   pages: Array<string | ReactNode>;
@@ -234,73 +235,81 @@ const ComicViewer: FC<ComicViewerProps> = ({
   }, [isSingleView]);
 
   return (
-    <FullScreen handle={handle}>
-      <Wrapper
-        height={windowHeight}
-        isExpansion={isExpansion}
-        isFullScreen={active}
-        {...handlers}
-      >
-        <Viewer>
-          <PagesWrapper currentPage={currentPage} pageWidth={pageWidth}>
-            {items}
-          </PagesWrapper>
-          {disabledNextPage ? null : (
-            <NavigationButton navigation="next" onClick={handleClickOnNextPage}>
-              <BiChevronLeft color="#888" size={64} />
-            </NavigationButton>
-          )}
-          {disabledPrevPage ? null : (
-            <NavigationButton navigation="prev" onClick={handleClickOnPrevPage}>
-              <BiChevronRight color="#888" size={64} />
-            </NavigationButton>
-          )}
-        </Viewer>
-        {active ? (
-          <CloseButton onClick={handleClickOnClose}>
-            <CgClose color="#fff" size={36} />
-          </CloseButton>
-        ) : (
-          <Controller>
-            {showMove ? (
-              <SubController ref={ref}>
-                <RangeInput
-                  onChange={handleChange}
-                  max={
-                    isSingleView ? pages.length : Math.ceil(pages.length / 2)
-                  }
-                  min={1}
-                  step={1}
-                  type="range"
-                  value={
-                    isSingleView
-                      ? currentPage + 1
-                      : Math.floor(currentPage / 2) + 1
-                  }
-                />
-              </SubController>
-            ) : (
-              <MainController>
-                <ScaleController>
-                  <ControlButton onClick={handleClickOnExpansion}>
-                    {expansionIcon}
-                    {expansion}
-                  </ControlButton>
-                  <ControlButton onClick={handleClickOnFullScreen}>
-                    <BiFullscreen color="#fff" size={24} />
-                    {fullScreen}
-                  </ControlButton>
-                </ScaleController>
-                <ControlButton onClick={handleClickOnShowMove}>
-                  <BiMoveHorizontal color="#fff" size={24} />
-                  {move}
-                </ControlButton>
-              </MainController>
+    <NoSSR>
+      <FullScreen handle={handle}>
+        <Wrapper
+          height={windowHeight}
+          isExpansion={isExpansion}
+          isFullScreen={active}
+          {...handlers}
+        >
+          <Viewer>
+            <PagesWrapper currentPage={currentPage} pageWidth={pageWidth}>
+              {items}
+            </PagesWrapper>
+            {disabledNextPage ? null : (
+              <NavigationButton
+                navigation="next"
+                onClick={handleClickOnNextPage}
+              >
+                <BiChevronLeft color="#888" size={64} />
+              </NavigationButton>
             )}
-          </Controller>
-        )}
-      </Wrapper>
-    </FullScreen>
+            {disabledPrevPage ? null : (
+              <NavigationButton
+                navigation="prev"
+                onClick={handleClickOnPrevPage}
+              >
+                <BiChevronRight color="#888" size={64} />
+              </NavigationButton>
+            )}
+          </Viewer>
+          {active ? (
+            <CloseButton onClick={handleClickOnClose}>
+              <CgClose color="#fff" size={36} />
+            </CloseButton>
+          ) : (
+            <Controller>
+              {showMove ? (
+                <SubController ref={ref}>
+                  <RangeInput
+                    onChange={handleChange}
+                    max={
+                      isSingleView ? pages.length : Math.ceil(pages.length / 2)
+                    }
+                    min={1}
+                    step={1}
+                    type="range"
+                    value={
+                      isSingleView
+                        ? currentPage + 1
+                        : Math.floor(currentPage / 2) + 1
+                    }
+                  />
+                </SubController>
+              ) : (
+                <MainController>
+                  <ScaleController>
+                    <ControlButton onClick={handleClickOnExpansion}>
+                      {expansionIcon}
+                      {expansion}
+                    </ControlButton>
+                    <ControlButton onClick={handleClickOnFullScreen}>
+                      <BiFullscreen color="#fff" size={24} />
+                      {fullScreen}
+                    </ControlButton>
+                  </ScaleController>
+                  <ControlButton onClick={handleClickOnShowMove}>
+                    <BiMoveHorizontal color="#fff" size={24} />
+                    {move}
+                  </ControlButton>
+                </MainController>
+              )}
+            </Controller>
+          )}
+        </Wrapper>
+      </FullScreen>
+    </NoSSR>
   );
 };
 
