@@ -5,6 +5,14 @@ import React, { FC } from "react";
 const Pages: FC = () => (
   <Layout>
     <ComicViewer
+      initialCurrentPage={2}
+      initialIsExpansion={false}
+      onChangeCurrentPage={(currentPage) => {
+        console.log(currentPage);
+      }}
+      onChangeExpansion={(isExpansion) => {
+        console.log(isExpansion);
+      }}
       pages={[
         "/comics/0.jpg",
         "/comics/1.jpg",

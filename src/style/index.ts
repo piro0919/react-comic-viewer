@@ -29,6 +29,7 @@ export const Viewer = styled.div`
 export type PagesWrapperProps = {
   currentPage: number;
   pageWidth: number;
+  switchingFullScreen: boolean;
 };
 
 export const PagesWrapper = styled.div<PagesWrapperProps>`
@@ -42,7 +43,8 @@ export const PagesWrapper = styled.div<PagesWrapperProps>`
   transform: translateX(
     calc(${({ currentPage, pageWidth }) => `${currentPage * pageWidth}px`})
   );
-  transition: 250ms;
+  transition: ${({ switchingFullScreen }) =>
+    `${switchingFullScreen ? 0 : 250}ms`};
 `;
 
 export type NavigationButtonProps = {
@@ -146,6 +148,7 @@ export const ControlButton = styled.button`
   gap: 8px;
   grid-template: auto / auto auto;
   height: 100%;
+  outline: none;
 `;
 
 export const CloseButton = styled.button`

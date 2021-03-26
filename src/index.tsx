@@ -1,4 +1,3 @@
-import useWindowSize from "./hooks/useWindowSize";
 import React, {
   ComponentPropsWithoutRef,
   FC,
@@ -19,6 +18,7 @@ import {
   Page,
   PageProps,
   PagesWrapper,
+  PagesWrapperProps,
   RangeInput,
   ScaleController,
   SubController,
@@ -37,18 +37,27 @@ import {
   BiMoveHorizontal,
 } from "react-icons/bi";
 import useOutsideClickRef from "@rooks/use-outside-click-ref";
-import { LazyLoadComponent } from "react-lazy-load-image-component";
 import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
 import NoSSR from "react-no-ssr";
+import useWindowSize from "@rooks/use-window-size";
+import useDidUpdate from "@rooks/use-did-update";
 
 export type ComicViewerProps = {
+  initialCurrentPage?: number;
+  initialIsExpansion?: boolean;
+  onChangeCurrentPage?: (currentPage: number) => void;
+  onChangeExpansion?: (isExpansion: boolean) => void;
   pages: Array<string | ReactNode>;
   switchingRatio?: number;
   text?: Record<"expansion" | "fullScreen" | "move" | "normal", string>;
 };
 
 const ComicViewer: FC<ComicViewerProps> = ({
+  initialCurrentPage = 0,
+  initialIsExpansion = false,
+  onChangeCurrentPage,
+  onChangeExpansion,
   pages,
   switchingRatio = 1,
   text = {
@@ -62,17 +71,17 @@ const ComicViewer: FC<ComicViewerProps> = ({
     () => text,
     [text]
   );
-  const { windowHeight, windowWidth } = useWindowSize();
+  const [windowHeight, setWindowHeight] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(0);
+  const { innerHeight, innerWidth } = useWindowSize();
   const [isExpansion, setIsExpansion] = useState<WrapperProps["isExpansion"]>(
-    false
+    initialIsExpansion
   );
+  const [switchingFullScreen, setSwitchingFullScreen] = useState<
+    PagesWrapperProps["switchingFullScreen"]
+  >(false);
   const handle = useFullScreenHandle();
-  const { active, enter, exit } = useMemo(
-    () => ({
-      ...handle,
-    }),
-    [handle]
-  );
+  const { active, enter, exit } = useMemo(() => handle, [handle]);
   const handleClickOnExpansion = useCallback<
     NonNullable<ComponentPropsWithoutRef<"button">["onClick"]>
   >(() => {
@@ -81,11 +90,15 @@ const ComicViewer: FC<ComicViewerProps> = ({
   const handleClickOnFullScreen = useCallback<
     NonNullable<ComponentPropsWithoutRef<"button">["onClick"]>
   >(() => {
+    setSwitchingFullScreen(true);
+
     enter();
   }, [enter]);
   const handleClickOnClose = useCallback<
     NonNullable<ComponentPropsWithoutRef<"button">["onClick"]>
   >(() => {
+    setSwitchingFullScreen(true);
+
     exit();
   }, [exit]);
   const pageWidth = useMemo<PageProps["width"]>(
@@ -117,14 +130,12 @@ const ComicViewer: FC<ComicViewerProps> = ({
       pages.map((page, index) => (
         <Page key={uniqid()} width={pageWidth}>
           {typeof page === "string" ? (
-            <LazyLoadComponent threshold={0}>
-              <Img
-                alt={page}
-                isOdd={!(index % 2)}
-                isSingleView={isSingleView}
-                src={page}
-              />
-            </LazyLoadComponent>
+            <Img
+              alt={page}
+              isOdd={!(index % 2)}
+              isSingleView={isSingleView}
+              src={page}
+            />
           ) : (
             page
           )}
@@ -135,7 +146,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
   const [prevIsExpansion, setPrevIsExpansion] = useState<
     typeof isExpansion | undefined
   >();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(initialCurrentPage);
   const disabledNextPage = useMemo(
     () =>
       (isSingleView && currentPage >= pages.length - 1) ||
@@ -149,6 +160,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
       return;
     }
 
+    setSwitchingFullScreen(false);
     setCurrentPage(
       (prevCurrentPage) => prevCurrentPage + (isSingleView ? 1 : 2)
     );
@@ -161,6 +173,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
       return;
     }
 
+    setSwitchingFullScreen(false);
     setCurrentPage(
       (prevCurrentPage) => prevCurrentPage - (isSingleView ? 1 : 2)
     );
@@ -175,6 +188,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
     NonNullable<ComponentPropsWithoutRef<"input">["onChange"]>
   >(
     ({ currentTarget: { value } }) => {
+      setSwitchingFullScreen(false);
       setCurrentPage(
         isSingleView ? parseInt(value, 10) - 1 : (parseInt(value, 10) - 1) * 2
       );
@@ -191,6 +205,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
         return;
       }
 
+      setSwitchingFullScreen(false);
       setCurrentPage(
         (prevCurrentPage) => prevCurrentPage - (isSingleView ? 1 : 2)
       );
@@ -200,6 +215,7 @@ const ComicViewer: FC<ComicViewerProps> = ({
         return;
       }
 
+      setSwitchingFullScreen(false);
       setCurrentPage(
         (prevCurrentPage) => prevCurrentPage + (isSingleView ? 1 : 2)
       );
@@ -234,6 +250,38 @@ const ComicViewer: FC<ComicViewerProps> = ({
     setCurrentPage((prevCurrentPage) => Math.floor(prevCurrentPage / 2) * 2);
   }, [isSingleView]);
 
+  useEffect(() => {
+    if (typeof innerHeight !== "number") {
+      return;
+    }
+
+    setWindowHeight(innerHeight);
+  }, [innerHeight]);
+
+  useEffect(() => {
+    if (typeof innerWidth !== "number") {
+      return;
+    }
+
+    setWindowWidth(innerWidth);
+  }, [innerWidth]);
+
+  useDidUpdate(() => {
+    if (!onChangeCurrentPage) {
+      return;
+    }
+
+    onChangeCurrentPage(currentPage);
+  }, [currentPage, onChangeCurrentPage]);
+
+  useDidUpdate(() => {
+    if (!onChangeExpansion) {
+      return;
+    }
+
+    onChangeExpansion(isExpansion);
+  }, [isExpansion, onChangeExpansion]);
+
   return (
     <NoSSR>
       <FullScreen handle={handle}>
@@ -244,7 +292,11 @@ const ComicViewer: FC<ComicViewerProps> = ({
           {...handlers}
         >
           <Viewer>
-            <PagesWrapper currentPage={currentPage} pageWidth={pageWidth}>
+            <PagesWrapper
+              currentPage={currentPage}
+              pageWidth={pageWidth}
+              switchingFullScreen={switchingFullScreen}
+            >
               {items}
             </PagesWrapper>
             {disabledNextPage ? null : (

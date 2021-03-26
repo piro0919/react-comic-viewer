@@ -1,13 +1,13 @@
 import { ComponentPropsWithoutRef, FC, useMemo } from "react";
-import useWindowSize from "hooks/useWindowSize";
+import useWindowSize from "@rooks/use-window-size";
 
 const Layout: FC = ({ children }) => {
-  const { windowHeight } = useWindowSize();
+  const { innerHeight } = useWindowSize();
   const style = useMemo<ComponentPropsWithoutRef<"div">["style"]>(
     () => ({
-      minHeight: windowHeight,
+      minHeight: innerHeight || 0,
     }),
-    [windowHeight]
+    [innerHeight]
   );
 
   return <div style={style}>{children}</div>;
