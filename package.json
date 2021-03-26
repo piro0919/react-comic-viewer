@@ -20,7 +20,7 @@
     "@emotion/styled": "11.1.5",
     "@rooks/use-outside-click-ref": "4.10.0",
     "@use-it/event-listener": "0.1.6",
-    "react-full-screen": "0.3.2-0",
+    "react-full-screen": "1.0.2",
     "react-icons": "4.2.0",
     "react-lazy-load-image-component": "1.5.1",
     "react-no-ssr": "^1.1.0",
