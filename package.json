@@ -19,7 +19,7 @@
     "@emotion/react": "11.1.5",
     "@emotion/styled": "11.1.5",
     "@rooks/use-did-update": "^4.10.0",
-    "@rooks/use-outside-click-ref": "4.10.0",
+    "@rooks/use-outside-click-ref": "4.10.1",
     "@rooks/use-window-size": "^4.10.0",
     "@use-it/event-listener": "0.1.6",
     "react-full-screen": "0.3.2-0",
