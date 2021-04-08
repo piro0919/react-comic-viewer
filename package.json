@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@emotion/react": "11.1.5",
-    "@emotion/styled": "11.1.5",
+    "@emotion/styled": "11.3.0",
     "@rooks/use-did-update": "^4.10.0",
     "@rooks/use-outside-click-ref": "4.11.0",
     "@rooks/use-window-size": "^4.10.0",
