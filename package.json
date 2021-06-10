@@ -18,13 +18,12 @@
   "dependencies": {
     "@emotion/react": "11.4.0",
     "@emotion/styled": "11.3.0",
+    "@mpth/react-no-ssr": "^1.0.1",
     "@rooks/use-did-update": "^4.10.0",
     "@rooks/use-outside-click-ref": "4.11.2",
     "@rooks/use-window-size": "^4.10.0",
-    "@use-it/event-listener": "0.1.6",
-    "react-full-screen": "0.3.2-0",
+    "react-full-screen": "1.0.2",
     "react-icons": "4.2.0",
-    "react-no-ssr": "^1.1.0",
     "react-swipeable": "6.1.2",
     "uniqid": "5.3.0",
     "use-debounce": "5.2.1"
@@ -80,5 +79,5 @@
     "test": "react-app-rewired test"
   },
   "types": "dist/index.d.ts",
-  "version": "0.2.0"
+  "version": "0.2.1"
 }

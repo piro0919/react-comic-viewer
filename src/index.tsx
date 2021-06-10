@@ -39,9 +39,9 @@ import {
 import useOutsideClickRef from "@rooks/use-outside-click-ref";
 import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
-import NoSSR from "react-no-ssr";
 import useWindowSize from "@rooks/use-window-size";
 import useDidUpdate from "@rooks/use-did-update";
+import NoSSR from "@mpth/react-no-ssr";
 
 export type ComicViewerProps = {
   initialCurrentPage?: number;
@@ -66,20 +66,20 @@ const ComicViewer: FC<ComicViewerProps> = ({
     move: "Move",
     normal: "Normal",
   },
-}) => {
-  const { expansion: expansionText, fullScreen, move, normal } = useMemo(
-    () => text,
-    [text]
-  );
+}: ComicViewerProps) => {
+  const {
+    expansion: expansionText,
+    fullScreen,
+    move,
+    normal,
+  } = useMemo(() => text, [text]);
   const [windowHeight, setWindowHeight] = useState(0);
   const [windowWidth, setWindowWidth] = useState(0);
   const { innerHeight, innerWidth } = useWindowSize();
-  const [isExpansion, setIsExpansion] = useState<WrapperProps["isExpansion"]>(
-    initialIsExpansion
-  );
-  const [switchingFullScreen, setSwitchingFullScreen] = useState<
-    PagesWrapperProps["switchingFullScreen"]
-  >(false);
+  const [isExpansion, setIsExpansion] =
+    useState<WrapperProps["isExpansion"]>(initialIsExpansion);
+  const [switchingFullScreen, setSwitchingFullScreen] =
+    useState<PagesWrapperProps["switchingFullScreen"]>(false);
   const handle = useFullScreenHandle();
   const { active, enter, exit } = useMemo(() => handle, [handle]);
   const handleClickOnExpansion = useCallback<
@@ -143,9 +143,8 @@ const ComicViewer: FC<ComicViewerProps> = ({
       )),
     [isSingleView, pageWidth, pages]
   );
-  const [prevIsExpansion, setPrevIsExpansion] = useState<
-    typeof isExpansion | undefined
-  >();
+  const [prevIsExpansion, setPrevIsExpansion] =
+    useState<typeof isExpansion | undefined>();
   const [currentPage, setCurrentPage] = useState(initialCurrentPage);
   const disabledNextPage = useMemo(
     () =>
