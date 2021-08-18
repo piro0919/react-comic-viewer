@@ -26,7 +26,7 @@
     "react-icons": "4.2.0",
     "react-swipeable": "6.2.0",
     "uniqid": "5.4.0",
-    "use-debounce": "5.2.1"
+    "use-debounce": "7.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.14.1",
