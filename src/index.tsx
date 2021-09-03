@@ -44,6 +44,7 @@ import useDidUpdate from "@rooks/use-did-update";
 import NoSSR from "@mpth/react-no-ssr";
 
 export type ComicViewerProps = {
+  direction?: "ltr" | "rtl";
   initialCurrentPage?: number;
   initialIsExpansion?: boolean;
   onChangeCurrentPage?: (currentPage: number) => void;
@@ -54,11 +55,12 @@ export type ComicViewerProps = {
 };
 
 const ComicViewer: FC<ComicViewerProps> = ({
+  direction = "rtl",
   initialCurrentPage = 0,
   initialIsExpansion = false,
   onChangeCurrentPage,
   onChangeExpansion,
-  pages,
+  pages: pagesProp,
   switchingRatio = 1,
   text = {
     expansion: "Expansion",
@@ -67,6 +69,15 @@ const ComicViewer: FC<ComicViewerProps> = ({
     normal: "Normal",
   },
 }: ComicViewerProps) => {
+  const pages = useMemo(() => {
+    if (direction === "rtl") {
+      return pagesProp;
+    }
+
+    const reversePages = pagesProp.slice().reverse();
+
+    return reversePages.length % 2 ? [null, ...reversePages] : reversePages;
+  }, [direction, pagesProp]);
   const {
     expansion: expansionText,
     fullScreen,
@@ -143,9 +154,14 @@ const ComicViewer: FC<ComicViewerProps> = ({
       )),
     [isSingleView, pageWidth, pages]
   );
-  const [prevIsExpansion, setPrevIsExpansion] =
-    useState<typeof isExpansion | undefined>();
-  const [currentPage, setCurrentPage] = useState(initialCurrentPage);
+  const [prevIsExpansion, setPrevIsExpansion] = useState<
+    typeof isExpansion | undefined
+  >();
+  const [currentPage, setCurrentPage] = useState(
+    direction === "rtl"
+      ? initialCurrentPage
+      : pages.length - initialCurrentPage - 1
+  );
   const disabledNextPage = useMemo(
     () =>
       (isSingleView && currentPage >= pages.length - 1) ||
