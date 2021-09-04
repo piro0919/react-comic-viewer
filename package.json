@@ -18,15 +18,13 @@
   "dependencies": {
     "@emotion/react": "11.4.1",
     "@emotion/styled": "11.3.0",
-    "@mpth/react-no-ssr": "^1.0.1",
+    "@react-hook/window-size": "^3.0.7",
     "@rooks/use-did-update": "^4.10.0",
     "@rooks/use-outside-click-ref": "4.11.2",
-    "@rooks/use-window-size": "^4.10.0",
+    "nanoid": "^3.1.25",
     "react-full-screen": "1.1.0",
     "react-icons": "4.2.0",
-    "react-swipeable": "6.2.0",
-    "uniqid": "5.4.0",
-    "use-debounce": "5.2.1"
+    "react-swipeable": "6.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.14.1",
@@ -79,5 +77,5 @@
     "test": "react-app-rewired test"
   },
   "types": "dist/index.d.ts",
-  "version": "0.3.0"
+  "version": "0.3.1"
 }
