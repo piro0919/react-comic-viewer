@@ -128,9 +128,11 @@ function ComicViewer({
 
     const reversePages = pagesProp.slice().reverse();
 
-    return isSingleView || reversePages.length % 2 === 0
-      ? reversePages
-      : [null, ...reversePages];
+    if (isSingleView || reversePages.length % 2 === 0) {
+      return reversePages;
+    }
+
+    return [null, ...reversePages];
   }, [isRightToLeft, isSingleView, pagesProp]);
   const items = useMemo(
     () =>
@@ -255,14 +257,28 @@ function ComicViewer({
     setIsExpansion(true);
   }, [active, isExpansion, prevIsExpansion]);
 
-  // TODO: the logic is not good on right to left
   useDidUpdate(() => {
     if (isSingleView) {
+      if (isRightToLeft) {
+        return;
+      }
+
+      setCurrentPage(
+        (prevCurrentPage) =>
+          Math.floor(prevCurrentPage / 2) * 2 +
+          (pagesProp.length % 2 === 0 ? 1 : 0)
+      );
+
       return;
     }
 
-    setCurrentPage((prevCurrentPage) => Math.floor(prevCurrentPage / 2) * 2);
-  }, [isRightToLeft, isSingleView, pages.length]);
+    setCurrentPage(
+      (prevCurrentPage) =>
+        (isRightToLeft || pagesProp.length % 2 === 0
+          ? Math.floor(prevCurrentPage / 2)
+          : Math.ceil(prevCurrentPage / 2)) * 2
+    );
+  }, [isRightToLeft, isSingleView, pagesProp.length]);
 
   useDidUpdate(() => {
     if (!onChangeCurrentPage) {
