@@ -1,16 +1,20 @@
-import { ComponentPropsWithoutRef, FC, useMemo } from "react";
-import useWindowSize from "@rooks/use-window-size";
+import { ComponentPropsWithoutRef, ReactNode, useMemo } from "react";
+import { useWindowHeight } from "@react-hook/window-size";
 
-const Layout: FC = ({ children }) => {
-  const { innerHeight } = useWindowSize();
+export type LayoutProps = {
+  children: ReactNode;
+};
+
+function Layout({ children }: LayoutProps): JSX.Element {
+  const onlyHeight = useWindowHeight();
   const style = useMemo<ComponentPropsWithoutRef<"div">["style"]>(
     () => ({
-      minHeight: innerHeight || 0,
+      minHeight: onlyHeight,
     }),
-    [innerHeight]
+    [onlyHeight]
   );
 
   return <div style={style}>{children}</div>;
-};
+}
 
 export default Layout;
