@@ -40,6 +40,7 @@ import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
 import { useWindowSize } from "@react-hook/window-size";
 import useDidUpdate from "@rooks/use-did-update";
+import screenfull from "screenfull";
 
 export type ComicViewerProps = {
   direction?: "ltr" | "rtl";
@@ -236,6 +237,7 @@ function ComicViewer({
       );
     },
   });
+  const { isEnabled } = useMemo(() => screenfull, []);
 
   useEffect(() => {
     if (!active) {
@@ -357,10 +359,12 @@ function ComicViewer({
                     {expansionIcon}
                     {expansion}
                   </ControlButton>
-                  <ControlButton onClick={handleClickOnFullScreen}>
-                    <BiFullscreen color="#fff" size={24} />
-                    {fullScreen}
-                  </ControlButton>
+                  {isEnabled ? (
+                    <ControlButton onClick={handleClickOnFullScreen}>
+                      <BiFullscreen color="#fff" size={24} />
+                      {fullScreen}
+                    </ControlButton>
+                  ) : null}
                 </ScaleController>
                 <ControlButton onClick={handleClickOnShowMove}>
                   <BiMoveHorizontal color="#fff" size={24} />

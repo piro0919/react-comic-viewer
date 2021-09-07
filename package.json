@@ -24,7 +24,8 @@
     "nanoid": "^3.1.25",
     "react-full-screen": "1.1.0",
     "react-icons": "4.2.0",
-    "react-swipeable": "6.2.0"
+    "react-swipeable": "6.2.0",
+    "screenfull": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.14.1",
@@ -77,5 +78,5 @@
     "test": "react-app-rewired test"
   },
   "types": "dist/index.d.ts",
-  "version": "0.3.2"
+  "version": "0.3.3"
 }
