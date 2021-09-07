@@ -38,3 +38,9 @@ export default App;
 | pages               |  Array   |    ✓     |
 | switchingRatio      |  Number  |          |
 | text                |  Object  |          |
+
+## Support
+
+[Full Screen API](https://caniuse.com/fullscreen) does not support iOS.
+
+Therefore, the full screen button is not displayed on iOS.
