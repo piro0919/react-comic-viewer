@@ -1,12 +1,20 @@
 import ComicViewer from "index";
 import Layout from "components/Layout";
-import React from "react";
+import React, { ChangeEventHandler, useCallback, useState } from "react";
+import Toggle from "react-toggle";
+import "react-toggle/style.css";
 
 function Pages(): JSX.Element {
+  const [isRightToLeft, setIsRightToLeft] = useState(true);
+  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(() => {
+    setIsRightToLeft((prevIsRightToLeft) => !prevIsRightToLeft);
+  }, []);
+
   return (
     <Layout>
       <ComicViewer
-        initialCurrentPage={2}
+        direction={isRightToLeft ? "rtl" : "ltr"}
+        initialCurrentPage={1}
         initialIsExpansion={false}
         onChangeCurrentPage={(currentPage) => {
           console.log(currentPage);
@@ -31,25 +39,41 @@ function Pages(): JSX.Element {
           normal: "通常",
         }}
       />
-      <p>
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-        <br />
-        hoge
-      </p>
+      <div style={{ padding: "16px" }}>
+        <label style={{ alignItems: "center", display: "inline-flex" }}>
+          Direction:
+          <Toggle
+            defaultChecked={isRightToLeft}
+            icons={{
+              checked: (
+                <div
+                  style={{
+                    alignItems: "center",
+                    color: "#fff",
+                    display: "flex",
+                    height: "100%",
+                  }}
+                >
+                  rtl
+                </div>
+              ),
+              unchecked: (
+                <div
+                  style={{
+                    alignItems: "center",
+                    color: "#fff",
+                    display: "flex",
+                    height: "100%",
+                  }}
+                >
+                  ltr
+                </div>
+              ),
+            }}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
     </Layout>
   );
 }

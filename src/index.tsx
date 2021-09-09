@@ -156,13 +156,9 @@ function ComicViewer({
   const [prevIsExpansion, setPrevIsExpansion] = useState<
     typeof isExpansion | undefined
   >();
-  const [currentPage, setCurrentPage] = useState(() => {
-    const currentPage = isRightToLeft
-      ? initialCurrentPage
-      : pages.length - initialCurrentPage - 1;
-
-    return isSingleView ? currentPage : Math.floor(currentPage / 2) * 2;
-  });
+  const [currentPage, setCurrentPage] = useState(
+    isSingleView ? initialCurrentPage : Math.floor(initialCurrentPage / 2) * 2
+  );
   const disabledNextPage = useMemo(
     () =>
       (isSingleView && currentPage >= pages.length - 1) ||
@@ -238,6 +234,14 @@ function ComicViewer({
     },
   });
   const { isEnabled } = useMemo(() => screenfull, []);
+  const rangeMax = useMemo(
+    () => (isSingleView ? pages.length : Math.ceil(pages.length / 2)),
+    [isSingleView, pages.length]
+  );
+  const rangeValue = useMemo(
+    () => (isSingleView ? currentPage + 1 : Math.floor(currentPage / 2) + 1),
+    [currentPage, isSingleView]
+  );
 
   useEffect(() => {
     if (!active) {
@@ -261,37 +265,18 @@ function ComicViewer({
 
   useDidUpdate(() => {
     if (isSingleView) {
-      if (isRightToLeft) {
-        return;
-      }
-
-      setCurrentPage(
-        (prevCurrentPage) =>
-          Math.floor(prevCurrentPage / 2) * 2 +
-          (pagesProp.length % 2 === 0 ? 1 : 0)
-      );
-
       return;
     }
 
-    setCurrentPage(
-      (prevCurrentPage) =>
-        (isRightToLeft || pagesProp.length % 2 === 0
-          ? Math.floor(prevCurrentPage / 2)
-          : Math.ceil(prevCurrentPage / 2)) * 2
-    );
-  }, [isRightToLeft, isSingleView, pagesProp.length]);
+    setCurrentPage((prevCurrentPage) => Math.floor(prevCurrentPage / 2) * 2);
+  }, [isSingleView]);
 
   useDidUpdate(() => {
     if (!onChangeCurrentPage) {
       return;
     }
 
-    onChangeCurrentPage(
-      isRightToLeft
-        ? currentPage
-        : pages.length - currentPage - (isSingleView ? 1 : 2)
-    );
+    onChangeCurrentPage(currentPage);
   }, [currentPage, onChangeCurrentPage]);
 
   useDidUpdate(() => {
@@ -313,19 +298,38 @@ function ComicViewer({
         <Viewer>
           <PagesWrapper
             currentPage={currentPage}
+            direction={direction}
+            isSingleView={isSingleView}
+            pagesLength={pages.length}
             pageWidth={pageWidth}
             switchingFullScreen={switchingFullScreen}
           >
             {items}
           </PagesWrapper>
           {disabledNextPage ? null : (
-            <NavigationButton navigation="next" onClick={handleClickOnNextPage}>
-              <BiChevronLeft color="#888" size={64} />
+            <NavigationButton
+              direction={direction}
+              navigation="next"
+              onClick={handleClickOnNextPage}
+            >
+              {isRightToLeft ? (
+                <BiChevronLeft color="#888" size={64} />
+              ) : (
+                <BiChevronRight color="#888" size={64} />
+              )}
             </NavigationButton>
           )}
           {disabledPrevPage ? null : (
-            <NavigationButton navigation="prev" onClick={handleClickOnPrevPage}>
-              <BiChevronRight color="#888" size={64} />
+            <NavigationButton
+              direction={direction}
+              navigation="prev"
+              onClick={handleClickOnPrevPage}
+            >
+              {isRightToLeft ? (
+                <BiChevronRight color="#888" size={64} />
+              ) : (
+                <BiChevronLeft color="#888" size={64} />
+              )}
             </NavigationButton>
           )}
         </Viewer>
@@ -338,18 +342,13 @@ function ComicViewer({
             {showMove ? (
               <SubController ref={ref}>
                 <RangeInput
+                  direction={direction}
                   onChange={handleChange}
-                  max={
-                    isSingleView ? pages.length : Math.ceil(pages.length / 2)
-                  }
+                  max={rangeMax}
                   min={1}
                   step={1}
                   type="range"
-                  value={
-                    isSingleView
-                      ? currentPage + 1
-                      : Math.floor(currentPage / 2) + 1
-                  }
+                  value={rangeValue}
                 />
               </SubController>
             ) : (
