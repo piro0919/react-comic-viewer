@@ -28,6 +28,9 @@ export const Viewer = styled.div`
 
 export type PagesWrapperProps = {
   currentPage: number;
+  direction: "ltr" | "rtl";
+  isSingleView: boolean;
+  pagesLength: number;
   pageWidth: number;
   switchingFullScreen: boolean;
 };
@@ -41,13 +44,21 @@ export const PagesWrapper = styled.div<PagesWrapperProps>`
   position: absolute;
   right: 0;
   transform: translateX(
-    calc(${({ currentPage, pageWidth }) => `${currentPage * pageWidth}px`})
+    calc(
+      ${({ currentPage, direction, isSingleView, pagesLength, pageWidth }) =>
+        `${
+          direction === "rtl"
+            ? currentPage * pageWidth
+            : (pagesLength - (isSingleView ? 1 : 2) - currentPage) * pageWidth
+        }px`}
+    )
   );
   transition: ${({ switchingFullScreen }) =>
     `${switchingFullScreen ? 0 : 250}ms`};
 `;
 
 export type NavigationButtonProps = {
+  direction: "rtl" | "ltr";
   navigation: "next" | "prev";
 };
 
@@ -58,10 +69,23 @@ export const NavigationButton = styled.a<NavigationButtonProps>`
   cursor: pointer;
   display: flex;
   height: 100%;
-  justify-content: ${({ navigation }) =>
-    navigation === "next" ? "flex-start" : "flex-end"};
+  justify-content: ${({ direction, navigation }) =>
+    direction === "rtl"
+      ? navigation === "next"
+        ? "flex-start"
+        : "flex-end"
+      : navigation === "next"
+      ? "flex-end"
+      : "flex-start"};
   opacity: 0.5;
-  right: ${({ navigation }) => (navigation === "next" ? "auto" : "0")};
+  right: ${({ direction, navigation }) =>
+    direction === "rtl"
+      ? navigation === "next"
+        ? "auto"
+        : "0"
+      : navigation === "next"
+      ? "0"
+      : "auto"};
   padding: 0;
   position: absolute;
   transition: 250ms;
@@ -123,10 +147,14 @@ export const MainController = styled.div`
   justify-content: space-between;
 `;
 
-export const RangeInput = styled.input`
+export type RangeInputProps = {
+  direction: "ltr" | "rtl";
+};
+
+export const RangeInput = styled.input<RangeInputProps>`
   cursor: pointer;
   max-width: 1024px;
-  transform: rotate(180deg);
+  transform: rotate(${({ direction }) => (direction === "rtl" ? 180 : 0)}deg);
   width: 100%;
 `;
 
