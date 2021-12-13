@@ -16,7 +16,7 @@
     "url": "https://github.com/piro0919/react-comic-viewer/issues"
   },
   "dependencies": {
-    "@emotion/react": "11.7.0",
+    "@emotion/react": "11.7.1",
     "@emotion/styled": "11.6.0",
     "@react-hook/window-size": "^3.0.7",
     "@rooks/use-did-update": "^4.10.0",
