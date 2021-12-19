@@ -35,6 +35,7 @@ export default App;
 | initialIsExpansion  | Boolean  |          |
 | onChangeCurrentPage | Function |          |
 | onChangeExpansion   | Function |          |
+| onClickCenter       | Function |          |
 | pages               |  Array   |    ✓     |
 | switchingRatio      |  Number  |          |
 | text                |  Object  |          |

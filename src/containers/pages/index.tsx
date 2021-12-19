@@ -22,6 +22,9 @@ function Pages(): JSX.Element {
         onChangeExpansion={(isExpansion) => {
           console.log(isExpansion);
         }}
+        onClickCenter={() => {
+          console.log("Click the center!");
+        }}
         pages={[
           "/comics/0.jpg",
           "/comics/1.jpg",

@@ -57,6 +57,15 @@ export const PagesWrapper = styled.div<PagesWrapperProps>`
     `${switchingFullScreen ? 0 : 250}ms`};
 `;
 
+export const CenterButton = styled.a`
+  cursor: pointer;
+  height: 100%;
+  left: calc(100% / 3);
+  position: absolute;
+  top: 0;
+  width: calc(100% / 3);
+`;
+
 export type NavigationButtonProps = {
   direction: "rtl" | "ltr";
   navigation: "next" | "prev";

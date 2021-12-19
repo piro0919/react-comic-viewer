@@ -1,5 +1,6 @@
 import React, {
   ComponentPropsWithoutRef,
+  MouseEventHandler,
   ReactNode,
   useCallback,
   useEffect,
@@ -7,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import {
+  CenterButton,
   CloseButton,
   ControlButton,
   Controller,
@@ -48,6 +50,7 @@ export type ComicViewerProps = {
   initialIsExpansion?: boolean;
   onChangeCurrentPage?: (currentPage: number) => void;
   onChangeExpansion?: (isExpansion: boolean) => void;
+  onClickCenter?: MouseEventHandler<HTMLAnchorElement>;
   pages: Array<string | ReactNode>;
   switchingRatio?: number;
   text?: Record<"expansion" | "fullScreen" | "move" | "normal", string>;
@@ -59,6 +62,7 @@ function ComicViewer({
   initialIsExpansion = false,
   onChangeCurrentPage,
   onChangeExpansion,
+  onClickCenter,
   pages: pagesProp,
   switchingRatio = 1,
   text = {
@@ -319,6 +323,7 @@ function ComicViewer({
               )}
             </NavigationButton>
           )}
+          {onClickCenter ? <CenterButton onClick={onClickCenter} /> : null}
           {disabledPrevPage ? null : (
             <NavigationButton
               direction={direction}
