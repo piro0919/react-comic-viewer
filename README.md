@@ -30,6 +30,7 @@ export default App;
 
 | Return              |   Type   | Required |
 | ------------------- | :------: | :------: |
+| className           |  Object  |          |
 | direction           |  String  |          |
 | initialCurrentPage  |  Number  |          |
 | initialIsExpansion  | Boolean  |          |

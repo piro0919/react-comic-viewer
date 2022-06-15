@@ -44,7 +44,27 @@ import { useWindowSize } from "@react-hook/window-size";
 import useDidUpdate from "@rooks/use-did-update";
 import screenfull from "screenfull";
 
+export type ClassName =
+  | "centerButton"
+  | "closeButton"
+  | "controller"
+  | "expansionControlButton"
+  | "fullScreenControlButton"
+  | "img"
+  | "mainController"
+  | "nextNavigationButton"
+  | "page"
+  | "pagesWrapper"
+  | "prevNavigationButton"
+  | "rangeInput"
+  | "scaleController"
+  | "showMoveControlButton"
+  | "subController"
+  | "viewer"
+  | "wrapper";
+
 export type ComicViewerProps = {
+  className?: { [key in ClassName]?: string };
   direction?: "ltr" | "rtl";
   initialCurrentPage?: number;
   initialIsExpansion?: boolean;
@@ -57,6 +77,7 @@ export type ComicViewerProps = {
 };
 
 function ComicViewer({
+  className,
   direction = "rtl",
   initialCurrentPage = 0,
   initialIsExpansion = false,
@@ -142,10 +163,11 @@ function ComicViewer({
   const items = useMemo(
     () =>
       pages.map((page, index) => (
-        <Page key={nanoid()} width={pageWidth}>
+        <Page className={className?.page} key={nanoid()} width={pageWidth}>
           {typeof page === "string" ? (
             <Img
               alt={page}
+              className={className?.img}
               isOdd={!(index % 2)}
               isSingleView={isSingleView}
               src={page}
@@ -155,7 +177,7 @@ function ComicViewer({
           )}
         </Page>
       )),
-    [isSingleView, pageWidth, pages]
+    [className?.img, className?.page, isSingleView, pageWidth, pages]
   );
   const [prevIsExpansion, setPrevIsExpansion] = useState<
     typeof isExpansion | undefined
@@ -294,13 +316,15 @@ function ComicViewer({
   return (
     <FullScreen handle={handle}>
       <Wrapper
+        className={className?.wrapper}
         height={height}
         isExpansion={isExpansion}
         isFullScreen={active}
         {...handlers}
       >
-        <Viewer>
+        <Viewer className={className?.viewer}>
           <PagesWrapper
+            className={className?.pagesWrapper}
             currentPage={currentPage}
             direction={direction}
             isSingleView={isSingleView}
@@ -312,6 +336,7 @@ function ComicViewer({
           </PagesWrapper>
           {disabledNextPage ? null : (
             <NavigationButton
+              className={className?.nextNavigationButton}
               direction={direction}
               navigation="next"
               onClick={handleClickOnNextPage}
@@ -323,9 +348,15 @@ function ComicViewer({
               )}
             </NavigationButton>
           )}
-          {onClickCenter ? <CenterButton onClick={onClickCenter} /> : null}
+          {onClickCenter ? (
+            <CenterButton
+              className={className?.centerButton}
+              onClick={onClickCenter}
+            />
+          ) : null}
           {disabledPrevPage ? null : (
             <NavigationButton
+              className={className?.prevNavigationButton}
               direction={direction}
               navigation="prev"
               onClick={handleClickOnPrevPage}
@@ -339,14 +370,18 @@ function ComicViewer({
           )}
         </Viewer>
         {active ? (
-          <CloseButton onClick={handleClickOnClose}>
+          <CloseButton
+            className={className?.closeButton}
+            onClick={handleClickOnClose}
+          >
             <CgClose color="#fff" size={36} />
           </CloseButton>
         ) : (
-          <Controller>
+          <Controller className={className?.controller}>
             {showMove ? (
-              <SubController ref={ref}>
+              <SubController className={className?.subController} ref={ref}>
                 <RangeInput
+                  className={className?.rangeInput}
                   direction={direction}
                   onChange={handleChange}
                   max={rangeMax}
@@ -357,20 +392,29 @@ function ComicViewer({
                 />
               </SubController>
             ) : (
-              <MainController>
-                <ScaleController>
-                  <ControlButton onClick={handleClickOnExpansion}>
+              <MainController className={className?.mainController}>
+                <ScaleController className={className?.scaleController}>
+                  <ControlButton
+                    className={className?.expansionControlButton}
+                    onClick={handleClickOnExpansion}
+                  >
                     {expansionIcon}
                     {expansion}
                   </ControlButton>
                   {isEnabled ? (
-                    <ControlButton onClick={handleClickOnFullScreen}>
+                    <ControlButton
+                      className={className?.fullScreenControlButton}
+                      onClick={handleClickOnFullScreen}
+                    >
                       <BiFullscreen color="#fff" size={24} />
                       {fullScreen}
                     </ControlButton>
                   ) : null}
                 </ScaleController>
-                <ControlButton onClick={handleClickOnShowMove}>
+                <ControlButton
+                  className={className?.showMoveControlButton}
+                  onClick={handleClickOnShowMove}
+                >
                   <BiMoveHorizontal color="#fff" size={24} />
                   {move}
                 </ControlButton>
