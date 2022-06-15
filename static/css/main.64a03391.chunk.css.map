@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://src/containers/styles/global.scss"],"names":[],"mappings":"AAAA,KACE,4BAA8B,CAC9B,oBAAqB,CACtB,KAGC,QAAS","file":"main.64a03391.chunk.css","sourcesContent":["html {\n  font-family: arial, sans-serif;\n  overflow: auto scroll;\n}\n\nbody {\n  margin: 0;\n}\n"]}

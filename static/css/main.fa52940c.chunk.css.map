@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/containers/styles/global.scss"],"names":[],"mappings":"AAAA,KACE,4BAAA,CACA,oBAAA,CAGF,KACE,QAAA","file":"main.fa52940c.chunk.css","sourcesContent":["html {\n  font-family: arial, sans-serif;\n  overflow: auto scroll;\n}\n\nbody {\n  margin: 0;\n}\n"]}
