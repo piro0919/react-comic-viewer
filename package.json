@@ -21,7 +21,7 @@
     "@react-hook/window-size": "^3.0.7",
     "@rooks/use-did-update": "^4.10.0",
     "@rooks/use-outside-click-ref": "4.11.2",
-    "nanoid": "^3.1.25",
+    "nanoid": "^4.0.0",
     "react-full-screen": "1.1.1",
     "react-icons": "4.8.0",
     "react-swipeable": "6.2.2",
