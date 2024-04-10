@@ -36,7 +36,7 @@
     "@types/react": "16.14.50",
     "@types/react-dom": "16.9.21",
     "@types/react-no-ssr": "1.1.7",
-    "@types/react-toggle": "4.0.4",
+    "@types/react-toggle": "4.0.5",
     "@types/uniqid": "5.3.3",
     "gh-pages": "3.2.3",
     "react": "17.0.2",
