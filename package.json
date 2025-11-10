@@ -25,7 +25,7 @@
     "react-full-screen": "1.1.1",
     "react-icons": "4.12.0",
     "react-swipeable": "6.2.2",
-    "screenfull": "^5.1.0"
+    "screenfull": "^6.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.17.0",
