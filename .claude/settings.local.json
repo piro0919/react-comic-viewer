@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:lib:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm remove:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(cat:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm publish:*)"
+    ]
+  }
+}
