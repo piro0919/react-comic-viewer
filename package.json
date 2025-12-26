@@ -23,16 +23,16 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./styles.css": "./dist/index.css"
   },
   "files": [
     "dist"
   ],
-  "homepage": "https://react-comic-viewer.kk-web.io",
+  "homepage": "https://react-comic-viewer.kkweb.io",
   "keywords": [
     "comic",
     "manga",
@@ -72,5 +72,5 @@
     "*.css"
   ],
   "types": "dist/index.d.ts",
-  "version": "0.5.0"
+  "version": "0.5.1"
 }

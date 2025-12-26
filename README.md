@@ -4,7 +4,7 @@ A comic/manga viewer component for React.
 
 ## Demo
 
-[https://react-comic-viewer.kk-web.io](https://react-comic-viewer.kk-web.io)
+[https://react-comic-viewer.kkweb.io](https://react-comic-viewer.kkweb.io)
 
 ## Features
 
@@ -47,36 +47,36 @@ export default App;
 
 ## Props
 
-| Prop                | Type                                           | Default | Description                                          |
-| ------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------- |
-| pages               | `Array<string \| ReactNode>`                   | -       | **Required.** Array of image URLs or React nodes     |
-| direction           | `"rtl" \| "ltr"`                               | `"rtl"` | Reading direction                                    |
-| initialCurrentPage  | `number`                                       | `0`     | Initial page index                                   |
-| initialIsExpansion  | `boolean`                                      | `false` | Initial expansion state                              |
-| showPageIndicator   | `boolean`                                      | `false` | Show current page indicator                          |
-| switchingRatio      | `number`                                       | `1`     | Aspect ratio threshold for single/double page switch |
-| onChangeCurrentPage | `(currentPage: number) => void`                | -       | Callback when page changes                           |
-| onChangeExpansion   | `(isExpansion: boolean) => void`               | -       | Callback when expansion state changes                |
-| onClickCenter       | `MouseEventHandler<HTMLButtonElement>`         | -       | Callback when center area is clicked                 |
-| className           | `Partial<Record<string, string>>`              | -       | Custom class names for styling                       |
-| text                | `{ expansion?, fullScreen?, move?, normal?, thumbnails? }` | - | Custom text for UI buttons               |
+| Prop                | Type                                                       | Default | Description                                          |
+| ------------------- | ---------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| pages               | `Array<string \| ReactNode>`                               | -       | **Required.** Array of image URLs or React nodes     |
+| direction           | `"rtl" \| "ltr"`                                           | `"rtl"` | Reading direction                                    |
+| initialCurrentPage  | `number`                                                   | `0`     | Initial page index                                   |
+| initialIsExpansion  | `boolean`                                                  | `false` | Initial expansion state                              |
+| showPageIndicator   | `boolean`                                                  | `false` | Show current page indicator                          |
+| switchingRatio      | `number`                                                   | `1`     | Aspect ratio threshold for single/double page switch |
+| onChangeCurrentPage | `(currentPage: number) => void`                            | -       | Callback when page changes                           |
+| onChangeExpansion   | `(isExpansion: boolean) => void`                           | -       | Callback when expansion state changes                |
+| onClickCenter       | `MouseEventHandler<HTMLButtonElement>`                     | -       | Callback when center area is clicked                 |
+| className           | `Partial<Record<string, string>>`                          | -       | Custom class names for styling                       |
+| text                | `{ expansion?, fullScreen?, move?, normal?, thumbnails? }` | -       | Custom text for UI buttons                           |
 
 ## Keyboard Shortcuts
 
-| Key         | Action                    |
-| ----------- | ------------------------- |
+| Key         | Action                                |
+| ----------- | ------------------------------------- |
 | Arrow Left  | Next page (RTL) / Previous page (LTR) |
 | Arrow Right | Previous page (RTL) / Next page (LTR) |
-| Escape      | Exit fullscreen           |
+| Escape      | Exit fullscreen                       |
 
 ## Touch Gestures
 
-| Gesture      | Action              |
-| ------------ | ------------------- |
-| Swipe left   | Navigate pages      |
-| Swipe right  | Navigate pages      |
-| Single tap   | Toggle UI visibility |
-| Double tap   | Toggle zoom (2x)    |
+| Gesture     | Action               |
+| ----------- | -------------------- |
+| Swipe left  | Navigate pages       |
+| Swipe right | Navigate pages       |
+| Single tap  | Toggle UI visibility |
+| Double tap  | Toggle zoom (2x)     |
 
 ## Browser Support
 
