@@ -141,6 +141,10 @@ export function ComicViewer({
   } = text;
 
   const isRtl = direction === "rtl";
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const { width, height } = useWindowSize();
   const isSingleView = height > width * switchingRatio;
   const pageWidth = isSingleView ? width : width / 2;
@@ -398,6 +402,14 @@ export function ComicViewer({
     transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : "center",
     transition: switchingFullScreen ? "0ms" : "250ms",
   };
+
+  // Avoid hydration mismatches: render nothing until window measurements are
+  // available on the client. The viewer's layout depends on viewport size
+  // (single vs double page, indicator total, etc.), which differs between
+  // SSR (0×0) and the real client viewport.
+  if (!isMounted) {
+    return <div className={`${styles.wrapper} ${className?.wrapper ?? ""}`} />;
+  }
 
   return (
     <div
