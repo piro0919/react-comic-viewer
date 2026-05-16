@@ -19,9 +19,39 @@ import {
 } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
-import { useWindowSize, useOnClickOutside } from "usehooks-ts";
 import screenfull from "screenfull";
 import styles from "./ComicViewer.module.css";
+
+function useWindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const update = () =>
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return size;
+}
+
+function useOnClickOutside(
+  ref: { current: HTMLElement | null },
+  handler: (event: MouseEvent | TouchEvent) => void,
+) {
+  useEffect(() => {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      const el = ref.current;
+      if (!el || el.contains(event.target as Node)) return;
+      handler(event);
+    };
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, handler]);
+}
 
 function PageImage({
   src,
