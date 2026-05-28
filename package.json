@@ -11,15 +11,15 @@
   },
   "description": "A comic/manga viewer component for React",
   "devDependencies": {
-    "@types/node": "^22.19.19",
-    "@types/react": "^18.3.29",
-    "@types/react-dom": "^18.3.7",
+    "@types/node": "^24.12.4",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
     "esbuild-css-modules-plugin": "^3.1.5",
-    "next": "^15.5.18",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "exports": {
     ".": {
@@ -54,8 +54,8 @@
   "module": "dist/index.mjs",
   "name": "react-comic-viewer",
   "peerDependencies": {
-    "react": ">=18.3.1",
-    "react-dom": ">=18.3.1"
+    "react": ">=19.2.6",
+    "react-dom": ">=19.2.6"
   },
   "repository": {
     "type": "git",
