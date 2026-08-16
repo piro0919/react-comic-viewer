@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://react-comic-viewer.kkweb.io"),
   title: "react-comic-viewer",
   description: "A comic/manga viewer component for React",
 };
