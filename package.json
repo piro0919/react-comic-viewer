@@ -32,6 +32,7 @@
   "files": [
     "dist"
   ],
+  "funding": "https://github.com/sponsors/piro0919",
   "homepage": "https://react-comic-viewer.kkweb.io",
   "keywords": [
     "comic",
