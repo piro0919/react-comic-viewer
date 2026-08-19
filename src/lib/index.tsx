@@ -19,9 +19,39 @@ import {
 } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { useSwipeable } from "react-swipeable";
-import { useWindowSize, useOnClickOutside } from "usehooks-ts";
 import screenfull from "screenfull";
 import styles from "./ComicViewer.module.css";
+
+function useWindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const update = () =>
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return size;
+}
+
+function useOnClickOutside(
+  ref: { current: HTMLElement | null },
+  handler: (event: MouseEvent | TouchEvent) => void,
+) {
+  useEffect(() => {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      const el = ref.current;
+      if (!el || el.contains(event.target as Node)) return;
+      handler(event);
+    };
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, handler]);
+}
 
 function PageImage({
   src,
@@ -111,6 +141,10 @@ export function ComicViewer({
   } = text;
 
   const isRtl = direction === "rtl";
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const { width, height } = useWindowSize();
   const isSingleView = height > width * switchingRatio;
   const pageWidth = isSingleView ? width : width / 2;
@@ -368,6 +402,14 @@ export function ComicViewer({
     transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : "center",
     transition: switchingFullScreen ? "0ms" : "250ms",
   };
+
+  // Avoid hydration mismatches: render nothing until window measurements are
+  // available on the client. The viewer's layout depends on viewport size
+  // (single vs double page, indicator total, etc.), which differs between
+  // SSR (0×0) and the real client viewport.
+  if (!isMounted) {
+    return <div className={`${styles.wrapper} ${className?.wrapper ?? ""}`} />;
+  }
 
   return (
     <div
