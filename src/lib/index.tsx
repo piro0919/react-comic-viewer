@@ -99,15 +99,64 @@ function PageImage({
   );
 }
 
+/**
+ * Keeps a piece of state that the consumer may or may not control.
+ *
+ * When `controlledValue` is `undefined` the state lives here and `onChange` is
+ * a notification. When it is provided the state lives in the parent: nothing is
+ * written locally and `onChange` becomes a request the parent is free to ignore.
+ */
+function useControllableState<T>(
+  controlledValue: T | undefined,
+  defaultValue: T,
+  onChange?: (value: T) => void,
+) {
+  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : uncontrolledValue;
+
+  // Read the latest value and callback through refs so the setter stays stable
+  // even when the consumer passes an inline `onChange`.
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  const setValue = useCallback(
+    (next: T | ((prev: T) => T)) => {
+      const resolved =
+        typeof next === "function"
+          ? (next as (prev: T) => T)(valueRef.current)
+          : next;
+      if (resolved === valueRef.current) return;
+      if (!isControlled) setUncontrolledValue(resolved);
+      onChangeRef.current?.(resolved);
+    },
+    [isControlled],
+  );
+
+  return [value, setValue] as const;
+}
+
+export type PageRenderer = (props: { className: string }) => ReactNode;
+
 export type ComicViewerProps = {
   className?: Partial<Record<string, string>>;
+  /** Controls the current page. Omit to let the viewer own it. */
+  currentPage?: number;
   direction?: "ltr" | "rtl";
   initialCurrentPage?: number;
   initialIsExpansion?: boolean;
+  /** Controls the expansion state. Omit to let the viewer own it. */
+  isExpansion?: boolean;
   onChangeCurrentPage?: (currentPage: number) => void;
   onChangeExpansion?: (isExpansion: boolean) => void;
   onClickCenter?: MouseEventHandler<HTMLButtonElement>;
-  pages: Array<string | ReactNode>;
+  /** Fired before moving forward. The move itself still goes through `onChangeCurrentPage`. */
+  onTryMoveNextPage?: (nextPage: number) => void;
+  /** Fired before moving back. The move itself still goes through `onChangeCurrentPage`. */
+  onTryMovePrevPage?: (prevPage: number) => void;
+  pages: Array<PageRenderer | ReactNode | string>;
   showPageIndicator?: boolean;
   switchingRatio?: number;
   text?: {
@@ -121,12 +170,16 @@ export type ComicViewerProps = {
 
 export function ComicViewer({
   className,
+  currentPage: currentPageProp,
   direction = "rtl",
   initialCurrentPage = 0,
   initialIsExpansion = false,
+  isExpansion: isExpansionProp,
   onChangeCurrentPage,
   onChangeExpansion,
   onClickCenter,
+  onTryMoveNextPage,
+  onTryMovePrevPage,
   pages: pagesProp,
   showPageIndicator = false,
   switchingRatio = 1,
@@ -150,9 +203,15 @@ export function ComicViewer({
   const pageWidth = isSingleView ? width : width / 2;
 
   // State
-  const [isExpansion, setIsExpansion] = useState(initialIsExpansion);
-  const [currentPage, setCurrentPage] = useState(() =>
-    isSingleView ? initialCurrentPage : Math.floor(initialCurrentPage / 2) * 2
+  const [isExpansion, setIsExpansion] = useControllableState(
+    isExpansionProp,
+    initialIsExpansion,
+    onChangeExpansion,
+  );
+  const [currentPage, setCurrentPage] = useControllableState(
+    currentPageProp,
+    isSingleView ? initialCurrentPage : Math.floor(initialCurrentPage / 2) * 2,
+    onChangeCurrentPage,
   );
   const [showMove, setShowMove] = useState(false);
   const [switchingFullScreen, setSwitchingFullScreen] = useState(false);
@@ -164,8 +223,6 @@ export function ComicViewer({
   const [showThumbnails, setShowThumbnails] = useState(false);
 
   // Refs
-  const isFirstRenderForPage = useRef(true);
-  const isFirstRenderForExpansion = useRef(true);
   const prevIsSingleView = useRef(isSingleView);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(null);
@@ -216,14 +273,16 @@ export function ComicViewer({
   const goNext = useCallback(() => {
     if (!canGoNext) return;
     setSwitchingFullScreen(false);
-    setCurrentPage((prev) => prev + step);
-  }, [canGoNext, step]);
+    onTryMoveNextPage?.(currentPage + step);
+    setCurrentPage(currentPage + step);
+  }, [canGoNext, currentPage, step, setCurrentPage, onTryMoveNextPage]);
 
   const goPrev = useCallback(() => {
     if (!canGoPrev) return;
     setSwitchingFullScreen(false);
-    setCurrentPage((prev) => prev - step);
-  }, [canGoPrev, step]);
+    onTryMovePrevPage?.(currentPage - step);
+    setCurrentPage(currentPage - step);
+  }, [canGoPrev, currentPage, step, setCurrentPage, onTryMovePrevPage]);
 
   // Swipe handlers (RTL: left=prev, right=next / LTR: left=next, right=prev)
   const { ref: swipeRef, ...swipeHandlers } = useSwipeable({
@@ -281,7 +340,7 @@ export function ComicViewer({
       setSwitchingFullScreen(false);
       setCurrentPage(isSingleView ? value - 1 : (value - 1) * 2);
     },
-    [isSingleView]
+    [isSingleView, setCurrentPage]
   );
 
   // Handle thumbnail click
@@ -291,7 +350,7 @@ export function ComicViewer({
       setCurrentPage(isSingleView ? index : Math.floor(index / 2) * 2);
       setShowThumbnails(false);
     },
-    [isSingleView]
+    [isSingleView, setCurrentPage]
   );
 
   // Fullscreen sync for expansion state
@@ -305,7 +364,7 @@ export function ComicViewer({
       setPrevIsExpansion(isExpansion);
       setIsExpansion(true);
     }
-  }, [isFullScreen, isExpansion, prevIsExpansion]);
+  }, [isFullScreen, isExpansion, prevIsExpansion, setIsExpansion]);
 
   // Adjust currentPage when switching between single/double view
   useEffect(() => {
@@ -313,7 +372,7 @@ export function ComicViewer({
       setCurrentPage((prev) => Math.floor(prev / 2) * 2);
     }
     prevIsSingleView.current = isSingleView;
-  }, [isSingleView]);
+  }, [isSingleView, setCurrentPage]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -356,22 +415,9 @@ export function ComicViewer({
     setIsZoomed(false);
   }, [currentPage]);
 
-  // Callbacks for page/expansion changes (skip first render)
-  useEffect(() => {
-    if (isFirstRenderForPage.current) {
-      isFirstRenderForPage.current = false;
-      return;
-    }
-    onChangeCurrentPage?.(currentPage);
-  }, [currentPage, onChangeCurrentPage]);
-
-  useEffect(() => {
-    if (isFirstRenderForExpansion.current) {
-      isFirstRenderForExpansion.current = false;
-      return;
-    }
-    onChangeExpansion?.(isExpansion);
-  }, [isExpansion, onChangeExpansion]);
+  // `onChangeCurrentPage` / `onChangeExpansion` are fired by the state setters
+  // themselves, so that they also reach the parent while the value is
+  // controlled from the outside.
 
   // Computed values
   const rangeMax = isSingleView ? pages.length : Math.ceil(pages.length / 2);
@@ -426,30 +472,36 @@ export function ComicViewer({
           className={`${styles.pagesWrapper} ${className?.pagesWrapper ?? ""}`}
           style={pagesWrapperStyle}
         >
-          {pages.map((page, index) => (
-            <div
-              key={index}
-              className={`${styles.page} ${className?.page ?? ""}`}
-              style={{ width: pageWidth }}
-            >
-              {typeof page === "string" ? (
-                <PageImage
-                  src={page}
-                  className={`${styles.img} ${
-                    isSingleView
-                      ? styles.imgSingle
-                      : index % 2 === 0
-                      ? styles.imgOdd
-                      : styles.imgEven
-                  } ${className?.img ?? ""}`}
-                  errorClassName={styles.imgError}
-                  loadingClassName={styles.imgLoading}
-                />
-              ) : (
-                page
-              )}
-            </div>
-          ))}
+          {pages.map((page, index) => {
+            const imgClassName = `${styles.img} ${
+              isSingleView
+                ? styles.imgSingle
+                : index % 2 === 0
+                ? styles.imgOdd
+                : styles.imgEven
+            } ${className?.img ?? ""}`;
+
+            return (
+              <div
+                key={index}
+                className={`${styles.page} ${className?.page ?? ""}`}
+                style={{ width: pageWidth }}
+              >
+                {typeof page === "string" ? (
+                  <PageImage
+                    src={page}
+                    className={imgClassName}
+                    errorClassName={styles.imgError}
+                    loadingClassName={styles.imgLoading}
+                  />
+                ) : typeof page === "function" ? (
+                  (page as PageRenderer)({ className: imgClassName })
+                ) : (
+                  page
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {canGoNext && (
@@ -650,6 +702,8 @@ export function ComicViewer({
                 >
                   {typeof page === "string" ? (
                     <img src={page} alt={`Page ${index + 1}`} className={styles.thumbnailImage} />
+                  ) : typeof page === "function" ? (
+                    (page as PageRenderer)({ className: styles.thumbnailImage })
                   ) : (
                     <div className={styles.thumbnailPlaceholder}>{index + 1}</div>
                   )}
