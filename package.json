@@ -8,7 +8,7 @@
     "react-swipeable": "^7.0.2",
     "screenfull": "^6.0.2"
   },
-  "description": "A comic/manga viewer component for React",
+  "description": "Comic viewer and manga viewer component for React, with right-to-left reading and double-page spreads",
   "devDependencies": {
     "@types/node": "^22.20.1",
     "@types/react": "^18.3.31",
@@ -36,7 +36,11 @@
   "homepage": "https://react-comic-viewer.kkweb.io",
   "keywords": [
     "comic",
+    "comic viewer",
+    "comic reader",
     "manga",
+    "manga viewer",
+    "manga reader",
     "react",
     "viewer",
     "image-viewer",
@@ -73,5 +77,5 @@
     "*.css"
   ],
   "types": "dist/index.d.ts",
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
