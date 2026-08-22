@@ -8,7 +8,7 @@
     "react-swipeable": "^7.0.2",
     "screenfull": "^6.0.2"
   },
-  "description": "Comic viewer and manga viewer component for React, with right-to-left reading and double-page spreads",
+  "description": "Comic viewer and manga viewer component for React",
   "devDependencies": {
     "@types/node": "^22.20.1",
     "@types/react": "^18.3.31",
@@ -77,5 +77,5 @@
     "*.css"
   ],
   "types": "dist/index.d.ts",
-  "version": "1.1.1"
+  "version": "1.1.2"
 }
