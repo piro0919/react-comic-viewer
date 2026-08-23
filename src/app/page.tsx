@@ -28,7 +28,13 @@ export default function Home() {
           padding: "16px 24px",
         }}
       >
-        <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
+        <h1
+          style={{
+            fontFamily: "var(--font-display), ui-sans-serif, sans-serif",
+            fontSize: "26px",
+            margin: 0,
+          }}
+        >
           react-comic-viewer
         </h1>
         <p
