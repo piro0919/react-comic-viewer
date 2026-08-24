@@ -1,0 +1,5 @@
+# pnpm 11 は、ビルドスクリプトを持つ依存を明示するまで install を失敗させる。
+# esbuild は tsup と vitest が、sharp は next の画像最適化が使う。
+allowBuilds:
+  esbuild: true
+  sharp: true

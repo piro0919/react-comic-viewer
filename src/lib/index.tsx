@@ -23,7 +23,15 @@ import screenfull from "screenfull";
 import styles from "./ComicViewer.module.css";
 
 function useWindowSize() {
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  // Start from the real size when there is a window. Leaving it at zero made
+  // the first render look like a spread, and `initialCurrentPage` was rounded
+  // down to an even page even when the viewer went on to open a single view.
+  // Nothing is painted before `isMounted`, so this cannot mismatch hydration.
+  const [size, setSize] = useState(() =>
+    typeof window === "undefined"
+      ? { width: 0, height: 0 }
+      : { width: window.innerWidth, height: window.innerHeight },
+  );
   useEffect(() => {
     const update = () =>
       setSize({ width: window.innerWidth, height: window.innerHeight });
