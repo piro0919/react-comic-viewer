@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEventHandler, useCallback, useState } from "react";
+import { type ChangeEventHandler, useCallback, useState } from "react";
 import ComicViewer from "@/lib";
 
 export default function Home() {

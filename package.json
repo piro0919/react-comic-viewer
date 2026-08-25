@@ -10,6 +10,7 @@
   },
   "description": "Comic viewer and manga viewer component for React",
   "devDependencies": {
+    "@biomejs/biome": "2.5.10",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.6",
@@ -75,10 +76,13 @@
     "build": "next build",
     "build:lib": "tsup",
     "dev": "next dev",
+    "format": "biome format --write",
+    "lint": "biome check",
     "prepublishOnly": "pnpm run test && pnpm run build:lib",
     "start": "next start",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "sideEffects": [
     "*.css"

@@ -14,7 +14,9 @@ const DESCRIPTION = "A comic and manga viewer component for React.";
 export default async function Image() {
   /* 見出しの書体はサイトと同じ Archivo Black。使う文字だけに絞ったものを
      同梱している。文言を変えたら assets/README.md の手順で作り直す */
-  const font = await readFile(join(process.cwd(), "assets/ArchivoBlack-subset.ttf"));
+  const font = await readFile(
+    join(process.cwd(), "assets/ArchivoBlack-subset.ttf"),
+  );
 
   return new ImageResponse(
     <div
@@ -36,27 +38,27 @@ export default async function Image() {
           width: 600,
         }}
       >
-      <div
-        style={{
-          display: "flex",
-          fontSize: 68,
-          fontWeight: 700,
-          letterSpacing: -1,
-        }}
-      >
-        {TITLE}
-      </div>
-      <div
-        style={{
-          display: "flex",
-          fontSize: 32,
-          marginTop: 28,
-          lineHeight: 1.4,
-          color: "#a1a1aa",
-        }}
-      >
-        {DESCRIPTION}
-      </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 68,
+            fontWeight: 700,
+            letterSpacing: -1,
+          }}
+        >
+          {TITLE}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 32,
+            marginTop: 28,
+            lineHeight: 1.4,
+            color: "#a1a1aa",
+          }}
+        >
+          {DESCRIPTION}
+        </div>
         <div
           style={{
             display: "flex",
@@ -124,7 +126,6 @@ export default async function Image() {
           ))}
         </div>
       </div>
-
     </div>,
     {
       ...size,

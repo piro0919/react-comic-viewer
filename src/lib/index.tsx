@@ -233,7 +233,9 @@ export function ComicViewer({
   // Refs
   const prevIsSingleView = useRef(isSingleView);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(null);
+  const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(
+    null,
+  );
   const thumbnailsRef = useRef<HTMLDivElement>(null);
 
   // Fullscreen handlers
@@ -348,7 +350,7 @@ export function ComicViewer({
       setSwitchingFullScreen(false);
       setCurrentPage(isSingleView ? value - 1 : (value - 1) * 2);
     },
-    [isSingleView, setCurrentPage]
+    [isSingleView, setCurrentPage],
   );
 
   // Handle thumbnail click
@@ -358,7 +360,7 @@ export function ComicViewer({
       setCurrentPage(isSingleView ? index : Math.floor(index / 2) * 2);
       setShowThumbnails(false);
     },
-    [isSingleView, setCurrentPage]
+    [isSingleView, setCurrentPage],
   );
 
   // Fullscreen sync for expansion state
@@ -419,6 +421,7 @@ export function ComicViewer({
   }, [currentPage, pages, isSingleView]);
 
   // Reset zoom when page changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentPage is what triggers the reset
   useEffect(() => {
     setIsZoomed(false);
   }, [currentPage]);
@@ -453,7 +456,9 @@ export function ComicViewer({
             ? currentPage * pageWidth
             : (pages.length - (isSingleView ? 1 : 2) - currentPage) * pageWidth
         }px)`,
-    transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : "center",
+    transformOrigin: isZoomed
+      ? `${zoomPosition.x}% ${zoomPosition.y}%`
+      : "center",
     transition: switchingFullScreen ? "0ms" : "250ms",
   };
 
@@ -485,12 +490,13 @@ export function ComicViewer({
               isSingleView
                 ? styles.imgSingle
                 : index % 2 === 0
-                ? styles.imgOdd
-                : styles.imgEven
+                  ? styles.imgOdd
+                  : styles.imgEven
             } ${className?.img ?? ""}`;
 
             return (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: a page has no id of its own
                 key={index}
                 className={`${styles.page} ${className?.page ?? ""}`}
                 style={{ width: pageWidth }}
@@ -572,113 +578,116 @@ export function ComicViewer({
         )}
       </div>
 
-      {isFullScreen ? (
-        showUI && (
-          <button
-            className={`${styles.closeButton} ${className?.closeButton ?? ""}`}
-            onClick={() => {
-              setSwitchingFullScreen(true);
-              exitFullScreen();
-            }}
-          >
-            <CgClose color="#fff" size={36} />
-          </button>
-        )
-      ) : (
-        showUI && (
-          <aside
-            className={`${styles.controller} ${className?.controller ?? ""}`}
-          >
-            {showMove ? (
-              <div
-                ref={moveSliderRef}
-                className={`${styles.subController} ${
-                  className?.subController ?? ""
-                }`}
-              >
-                <input
-                  type="range"
-                  min={1}
-                  max={rangeMax}
-                  step={1}
-                  value={rangeValue}
-                  onChange={handleRangeChange}
-                  className={`${styles.rangeInput} ${
-                    isRtl ? styles.rangeInputRtl : ""
-                  } ${className?.rangeInput ?? ""}`}
-                />
-              </div>
-            ) : (
-              <div
-                className={`${styles.mainController} ${
-                  className?.mainController ?? ""
-                }`}
-              >
+      {isFullScreen
+        ? showUI && (
+            <button
+              className={`${styles.closeButton} ${className?.closeButton ?? ""}`}
+              onClick={() => {
+                setSwitchingFullScreen(true);
+                exitFullScreen();
+              }}
+              type="button"
+            >
+              <CgClose color="#fff" size={36} />
+            </button>
+          )
+        : showUI && (
+            <aside
+              className={`${styles.controller} ${className?.controller ?? ""}`}
+            >
+              {showMove ? (
                 <div
-                  className={`${styles.scaleController} ${
-                    className?.scaleController ?? ""
+                  ref={moveSliderRef}
+                  className={`${styles.subController} ${
+                    className?.subController ?? ""
                   }`}
                 >
-                  <button
-                    className={`${styles.controlButton} ${
-                      className?.expansionControlButton ?? ""
+                  <input
+                    type="range"
+                    min={1}
+                    max={rangeMax}
+                    step={1}
+                    value={rangeValue}
+                    onChange={handleRangeChange}
+                    className={`${styles.rangeInput} ${
+                      isRtl ? styles.rangeInputRtl : ""
+                    } ${className?.rangeInput ?? ""}`}
+                  />
+                </div>
+              ) : (
+                <div
+                  className={`${styles.mainController} ${
+                    className?.mainController ?? ""
+                  }`}
+                >
+                  <div
+                    className={`${styles.scaleController} ${
+                      className?.scaleController ?? ""
                     }`}
-                    onClick={() => setIsExpansion((prev) => !prev)}
                   >
-                    {isExpansion ? (
-                      <BiCollapse color="#fff" size={24} />
-                    ) : (
-                      <BiExpand color="#fff" size={24} />
-                    )}
-                    {isExpansion ? normalText : expansionText}
-                  </button>
-
-                  {screenfull.isEnabled && (
                     <button
                       className={`${styles.controlButton} ${
-                        className?.fullScreenControlButton ?? ""
+                        className?.expansionControlButton ?? ""
                       }`}
-                      onClick={() => {
-                        setSwitchingFullScreen(true);
-                        enterFullScreen();
-                      }}
+                      onClick={() => setIsExpansion((prev) => !prev)}
+                      type="button"
                     >
-                      <BiFullscreen color="#fff" size={24} />
-                      {fullScreenText}
+                      {isExpansion ? (
+                        <BiCollapse color="#fff" size={24} />
+                      ) : (
+                        <BiExpand color="#fff" size={24} />
+                      )}
+                      {isExpansion ? normalText : expansionText}
                     </button>
-                  )}
-                </div>
 
-                <div
-                  className={`${styles.scaleController} ${
-                    className?.scaleController ?? ""
-                  }`}
-                >
-                  <button
-                    className={`${styles.controlButton} ${
-                      className?.showMoveControlButton ?? ""
-                    }`}
-                    onClick={() => setShowMove(true)}
-                  >
-                    <BiMoveHorizontal color="#fff" size={24} />
-                    {moveText}
-                  </button>
+                    {screenfull.isEnabled && (
+                      <button
+                        className={`${styles.controlButton} ${
+                          className?.fullScreenControlButton ?? ""
+                        }`}
+                        onClick={() => {
+                          setSwitchingFullScreen(true);
+                          enterFullScreen();
+                        }}
+                        type="button"
+                      >
+                        <BiFullscreen color="#fff" size={24} />
+                        {fullScreenText}
+                      </button>
+                    )}
+                  </div>
 
-                  <button
-                    className={`${styles.controlButton} ${
-                      className?.thumbnailsControlButton ?? ""
+                  <div
+                    className={`${styles.scaleController} ${
+                      className?.scaleController ?? ""
                     }`}
-                    onClick={() => setShowThumbnails(true)}
                   >
-                    <BiGridAlt color="#fff" size={24} />
-                    {thumbnailsText}
-                  </button>
+                    <button
+                      className={`${styles.controlButton} ${
+                        className?.showMoveControlButton ?? ""
+                      }`}
+                      onClick={() => setShowMove(true)}
+                      type="button"
+                    >
+                      <BiMoveHorizontal color="#fff" size={24} />
+                      {moveText}
+                    </button>
+
+                    <button
+                      className={`${styles.controlButton} ${
+                        className?.thumbnailsControlButton ?? ""
+                      }`}
+                      onClick={() => setShowThumbnails(true)}
+                      type="button"
+                    >
+                      <BiGridAlt color="#fff" size={24} />
+                      {thumbnailsText}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </aside>
-        )
-      )}
+              )}
+            </aside>
+          )}
 
       {showThumbnails && (
         <div className={styles.thumbnailsOverlay}>
@@ -693,6 +702,7 @@ export function ComicViewer({
               <button
                 className={styles.thumbnailsCloseButton}
                 onClick={() => setShowThumbnails(false)}
+                type="button"
               >
                 <CgClose color="#fff" size={24} />
               </button>
@@ -700,20 +710,32 @@ export function ComicViewer({
             <div className={styles.thumbnailsGrid}>
               {pagesProp.map((page, index) => (
                 <button
+                  // biome-ignore lint/suspicious/noArrayIndexKey: a page has no id of its own
                   key={index}
                   className={`${styles.thumbnailItem} ${
-                    (isSingleView ? index === currentPage : Math.floor(index / 2) * 2 === currentPage)
+                    (
+                      isSingleView
+                        ? index === currentPage
+                        : Math.floor(index / 2) * 2 === currentPage
+                    )
                       ? styles.thumbnailItemActive
                       : ""
                   } ${className?.thumbnailItem ?? ""}`}
                   onClick={() => handleThumbnailClick(index)}
+                  type="button"
                 >
                   {typeof page === "string" ? (
-                    <img src={page} alt={`Page ${index + 1}`} className={styles.thumbnailImage} />
+                    <img
+                      src={page}
+                      alt={`Page ${index + 1}`}
+                      className={styles.thumbnailImage}
+                    />
                   ) : typeof page === "function" ? (
                     (page as PageRenderer)({ className: styles.thumbnailImage })
                   ) : (
-                    <div className={styles.thumbnailPlaceholder}>{index + 1}</div>
+                    <div className={styles.thumbnailPlaceholder}>
+                      {index + 1}
+                    </div>
                   )}
                   <span className={styles.thumbnailNumber}>{index + 1}</span>
                 </button>

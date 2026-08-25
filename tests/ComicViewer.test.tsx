@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { ComicViewer } from "../src/lib";
 
 const PAGES = ["/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg"];
@@ -23,7 +23,9 @@ describe("ComicViewer", () => {
   it("turns two pages at a time in a spread", async () => {
     const user = userEvent.setup();
     const onChangeCurrentPage = vi.fn();
-    render(<ComicViewer pages={PAGES} onChangeCurrentPage={onChangeCurrentPage} />);
+    render(
+      <ComicViewer pages={PAGES} onChangeCurrentPage={onChangeCurrentPage} />,
+    );
 
     await user.click(screen.getByLabelText("Next page"));
     expect(onChangeCurrentPage).toHaveBeenCalledWith(2);
@@ -33,7 +35,11 @@ describe("ComicViewer", () => {
     const user = userEvent.setup();
     const onChangeCurrentPage = vi.fn();
     render(
-      <ComicViewer pages={PAGES} {...SINGLE} onChangeCurrentPage={onChangeCurrentPage} />,
+      <ComicViewer
+        pages={PAGES}
+        {...SINGLE}
+        onChangeCurrentPage={onChangeCurrentPage}
+      />,
     );
 
     await user.click(screen.getByLabelText("Next page"));
@@ -130,7 +136,9 @@ describe("ComicViewer", () => {
         text={{ expansion: "ひろげる", thumbnails: "一覧", move: "移動" }}
       />,
     );
-    expect(screen.getByRole("button", { name: "ひろげる" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "ひろげる" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "一覧" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "移動" })).toBeInTheDocument();
   });
@@ -138,7 +146,10 @@ describe("ComicViewer", () => {
   it("accepts a render function for a page", () => {
     render(
       <ComicViewer
-        pages={[({ className }) => <p className={className}>drawn here</p>, "/2.jpg"]}
+        pages={[
+          ({ className }) => <p className={className}>drawn here</p>,
+          "/2.jpg",
+        ]}
       />,
     );
     expect(screen.getByText("drawn here")).toBeInTheDocument();
