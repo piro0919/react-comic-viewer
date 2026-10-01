@@ -1,5 +1,6 @@
 import {
   type MouseEventHandler,
+  type ReactElement,
   type ReactNode,
   type SyntheticEvent,
   useCallback,
@@ -148,8 +149,40 @@ function useControllableState<T>(
 
 export type PageRenderer = (props: { className: string }) => ReactNode;
 
+/** The elements whose class name can be extended through `className`. */
+export type ComicViewerClassNameKey =
+  | "centerButton"
+  | "closeButton"
+  | "controller"
+  | "expansionControlButton"
+  | "fullScreenControlButton"
+  | "img"
+  | "mainController"
+  | "nextNavigationButton"
+  | "page"
+  | "pageIndicator"
+  | "pagesWrapper"
+  | "prevNavigationButton"
+  | "rangeInput"
+  | "scaleController"
+  | "showMoveControlButton"
+  | "subController"
+  | "thumbnailItem"
+  | "thumbnailsContainer"
+  | "thumbnailsControlButton"
+  | "viewer"
+  | "wrapper";
+
+/**
+ * Extra class names per element. The known keys complete in the editor; any
+ * other string key is still accepted, as it was before the keys were listed.
+ */
+export type ComicViewerClassNames = Partial<
+  Record<ComicViewerClassNameKey, string>
+> & { [key: string]: string | undefined };
+
 export type ComicViewerProps = {
-  className?: Partial<Record<string, string>>;
+  className?: ComicViewerClassNames;
   /** Controls the current page. Omit to let the viewer own it. */
   currentPage?: number;
   direction?: "ltr" | "rtl";
@@ -192,7 +225,7 @@ export function ComicViewer({
   showPageIndicator = false,
   switchingRatio = 1,
   text = {},
-}: ComicViewerProps): JSX.Element {
+}: ComicViewerProps): ReactElement {
   const {
     expansion: expansionText = "Expansion",
     fullScreen: fullScreenText = "Full screen",
