@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ComicViewer } from "../src/lib";
 
 const PAGES = ["/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg"];
@@ -153,5 +153,30 @@ describe("ComicViewer", () => {
       />,
     );
     expect(screen.getByText("drawn here")).toBeInTheDocument();
+  });
+});
+
+describe("sizing", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("lays out against its container, not the window", async () => {
+    // The window is 1024x768, which opens a spread. A 300px-wide container is
+    // taller than wide, so the viewer should fall back to a single view.
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      width: 300,
+      height: 600,
+    } as DOMRect);
+    const user = userEvent.setup();
+    const onChangeCurrentPage = vi.fn();
+    const { container } = render(
+      <ComicViewer pages={PAGES} onChangeCurrentPage={onChangeCurrentPage} />,
+    );
+
+    const firstPage = container.querySelector<HTMLElement>("[style*=width]");
+    expect(firstPage?.style.width).toBe("300px");
+    await user.click(screen.getByLabelText("Next page"));
+    expect(onChangeCurrentPage).toHaveBeenCalledWith(1);
   });
 });

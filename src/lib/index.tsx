@@ -5,6 +5,7 @@ import {
   type SyntheticEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -23,25 +24,80 @@ import { useSwipeable } from "react-swipeable";
 import screenfull from "screenfull";
 import styles from "./ComicViewer.module.css";
 
-function useWindowSize() {
-  // Start from the real size when there is a window. Leaving it at zero made
-  // the first render look like a spread, and `initialCurrentPage` was rounded
-  // down to an even page even when the viewer went on to open a single view.
-  // Nothing is painted before `isMounted`, so this cannot mismatch hydration.
+// `useLayoutEffect` warns when rendered on the server, and there is nothing to
+// measure there anyway.
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+/**
+ * The box the viewer lays its pages out in.
+ *
+ * `width` is the wrapper's own width, so the viewer fits whatever container it
+ * is placed in: a sidebar, a modal, a column. It is measured with a
+ * ResizeObserver, which also catches container changes that are not a window
+ * resize.
+ *
+ * `height` is the viewport's. The wrapper sets its own height from it (see
+ * `wrapperStyle`), so measuring the wrapper's height would feed back into
+ * itself, and a parent whose height follows its content would do the same.
+ *
+ * Before the wrapper can be measured — on the first client render, or when
+ * the element has no layout box (`display: none`, jsdom) — the width falls back
+ * to the window's. Leaving it at zero made the first render look like a spread,
+ * and `initialCurrentPage` was rounded down to an even page even when the
+ * viewer went on to open a single view. Nothing is painted before
+ * `isMounted`, so this cannot mismatch hydration.
+ */
+function useViewerSize(
+  ref: { current: HTMLElement | null },
+  isMounted: boolean,
+) {
   const [size, setSize] = useState(() =>
     typeof window === "undefined"
       ? { width: 0, height: 0 }
       : { width: window.innerWidth, height: window.innerHeight },
   );
-  useEffect(() => {
-    const update = () =>
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
+  useIsomorphicLayoutEffect(() => {
+    if (!isMounted) return;
+    const measure = () => {
+      const measured = ref.current?.getBoundingClientRect().width ?? 0;
+      const width = measured > 0 ? measured : window.innerWidth;
+      const height = window.innerHeight;
+      setSize((prev) =>
+        prev.width === width && prev.height === height
+          ? prev
+          : { width, height },
+      );
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    const el = ref.current;
+    const observer =
+      el && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(measure)
+        : undefined;
+    if (el) observer?.observe(el);
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer?.disconnect();
+    };
+  }, [isMounted, ref]);
   return size;
 }
+
+/**
+ * Wrapper height, outside full screen and expansion: the viewport height
+ * minus `VIEWPORT_MARGIN`, kept between `MIN_HEIGHT` and `MAX_HEIGHT`.
+ *
+ * - `VIEWPORT_MARGIN` leaves room for a site header above the viewer, so the
+ *   controller at its bottom edge stays on screen without scrolling.
+ * - `MAX_HEIGHT` stops the viewer from growing past a comfortable reading
+ *   height on tall screens; "Expansion" lifts it.
+ * - `MIN_HEIGHT` keeps a spread usable in a short window.
+ */
+const VIEWPORT_MARGIN = 95;
+const MAX_HEIGHT = 840;
+const MIN_HEIGHT = 440;
 
 function useOnClickOutside(
   ref: { current: HTMLElement | null },
@@ -239,7 +295,8 @@ export function ComicViewer({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  const { width, height } = useWindowSize();
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const { width, height } = useViewerSize(wrapperRef, isMounted);
   const isSingleView = height > width * switchingRatio;
   const pageWidth = isSingleView ? width : width / 2;
 
@@ -265,7 +322,6 @@ export function ComicViewer({
 
   // Refs
   const prevIsSingleView = useRef(isSingleView);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const lastTapRef = useRef<{ time: number; x: number; y: number } | null>(
     null,
   );
@@ -472,9 +528,13 @@ export function ComicViewer({
   const hideController = isFullScreen || !showUI;
   const wrapperStyle: React.CSSProperties = {
     gridTemplate: `1fr ${hideController ? "0" : "40px"} / 1fr`,
-    height: isFullScreen ? "100vh" : `${height - (isExpansion ? 0 : 95)}px`,
-    maxHeight: isFullScreen ? "100vh" : `${isExpansion ? height : 840}px`,
-    minHeight: isFullScreen ? "100vh" : `${isExpansion ? 0 : 440}px`,
+    height: isFullScreen
+      ? "100vh"
+      : `${height - (isExpansion ? 0 : VIEWPORT_MARGIN)}px`,
+    maxHeight: isFullScreen
+      ? "100vh"
+      : `${isExpansion ? height : MAX_HEIGHT}px`,
+    minHeight: isFullScreen ? "100vh" : `${isExpansion ? 0 : MIN_HEIGHT}px`,
   };
 
   const pagesWrapperStyle: React.CSSProperties = {
