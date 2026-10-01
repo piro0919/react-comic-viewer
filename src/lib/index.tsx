@@ -99,6 +99,14 @@ const VIEWPORT_MARGIN = 95;
 const MAX_HEIGHT = 840;
 const MIN_HEIGHT = 440;
 
+/**
+ * Pages within this many turns of the current one, either way, are mounted
+ * and fetched. The ones ahead are the preload: by the time the reader turns,
+ * the image is already decoded. Pages further away are not fetched until the
+ * reader gets near them.
+ */
+const EAGER_TURNS = 2;
+
 function useOnClickOutside(
   ref: { current: HTMLElement | null },
   handler: (event: MouseEvent | TouchEvent) => void,
@@ -155,6 +163,7 @@ function PageImage({
       <img
         src={src}
         alt=""
+        decoding="async"
         className={className}
         style={{ opacity: isLoading ? 0 : 1 }}
         onLoad={handleLoad}
@@ -489,25 +498,22 @@ export function ComicViewer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isRtl, goNext, goPrev, isFullScreen, exitFullScreen]);
 
-  // Preload adjacent pages
-  useEffect(() => {
-    const preloadPage = (index: number) => {
-      const page = pages[index];
-      if (typeof page === "string") {
-        const img = new Image();
-        img.src = page;
-      }
-    };
-
-    // Preload next pages
-    if (isSingleView) {
-      if (currentPage + 1 < pages.length) preloadPage(currentPage + 1);
-      if (currentPage + 2 < pages.length) preloadPage(currentPage + 2);
-    } else {
-      if (currentPage + 2 < pages.length) preloadPage(currentPage + 2);
-      if (currentPage + 3 < pages.length) preloadPage(currentPage + 3);
+  // Which pages to fetch. `currentPage` counts in reading order in both
+  // directions, while `pages` is reversed in LTR, so an index into `pages` has
+  // to be turned back into reading order before it is compared. Image pages
+  // that have been near once stay mounted, so turning back never shows the
+  // spinner again.
+  const fetchedSrcs = useRef(new Set<string>()).current;
+  const eagerFrom = currentPage - EAGER_TURNS * step;
+  const eagerTo = currentPage + step + EAGER_TURNS * step;
+  const shouldMountPage = (page: unknown, index: number) => {
+    if (typeof page !== "string") return true;
+    const readingIndex = isRtl ? index : pages.length - 1 - index;
+    if (readingIndex >= eagerFrom && readingIndex < eagerTo) {
+      fetchedSrcs.add(page);
     }
-  }, [currentPage, pages, isSingleView]);
+    return fetchedSrcs.has(page);
+  };
 
   // Reset zoom when page changes
   // biome-ignore lint/correctness/useExhaustiveDependencies: currentPage is what triggers the reset
@@ -594,18 +600,18 @@ export function ComicViewer({
                 className={`${styles.page} ${className?.page ?? ""}`}
                 style={{ width: pageWidth }}
               >
-                {typeof page === "string" ? (
-                  <PageImage
-                    src={page}
-                    className={imgClassName}
-                    errorClassName={styles.imgError}
-                    loadingClassName={styles.imgLoading}
-                  />
-                ) : typeof page === "function" ? (
-                  (page as PageRenderer)({ className: imgClassName })
-                ) : (
-                  page
-                )}
+                {typeof page === "string"
+                  ? shouldMountPage(page, index) && (
+                      <PageImage
+                        src={page}
+                        className={imgClassName}
+                        errorClassName={styles.imgError}
+                        loadingClassName={styles.imgLoading}
+                      />
+                    )
+                  : typeof page === "function"
+                    ? (page as PageRenderer)({ className: imgClassName })
+                    : page}
               </div>
             );
           })}
@@ -821,6 +827,8 @@ export function ComicViewer({
                     <img
                       src={page}
                       alt={`Page ${index + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       className={styles.thumbnailImage}
                     />
                   ) : typeof page === "function" ? (

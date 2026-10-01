@@ -156,6 +156,135 @@ describe("ComicViewer", () => {
   });
 });
 
+/** Ten pages, so the eager window is visibly smaller than the book. */
+const BOOK = Array.from({ length: 10 }, (_, i) => `/${i + 1}.jpg`);
+
+/** The page images currently mounted, in reading order. */
+function mountedPages(container: HTMLElement) {
+  return [...container.querySelectorAll("img")]
+    .map((img) => img.getAttribute("src") ?? "")
+    .sort(
+      (a, b) =>
+        Number.parseInt(a.slice(1), 10) - Number.parseInt(b.slice(1), 10),
+    );
+}
+
+describe("fetching pages", () => {
+  it("mounts only the pages near the current one in a single view", () => {
+    const { container } = render(<ComicViewer pages={BOOK} {...SINGLE} />);
+    expect(mountedPages(container)).toEqual(["/1.jpg", "/2.jpg", "/3.jpg"]);
+  });
+
+  it("mounts two spreads ahead in a spread", () => {
+    const { container } = render(<ComicViewer pages={BOOK} />);
+    expect(mountedPages(container)).toEqual([
+      "/1.jpg",
+      "/2.jpg",
+      "/3.jpg",
+      "/4.jpg",
+      "/5.jpg",
+      "/6.jpg",
+    ]);
+  });
+
+  it("keeps a page mounted once it has been near", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<ComicViewer pages={BOOK} {...SINGLE} />);
+    await user.click(screen.getByLabelText("Next page"));
+    await user.click(screen.getByLabelText("Next page"));
+    await user.click(screen.getByLabelText("Next page"));
+    await user.click(screen.getByLabelText("Next page"));
+    // On page 5 the window is 3..7; 1 and 2 were fetched on the way here.
+    expect(mountedPages(container)).toEqual(BOOK.slice(0, 7));
+  });
+
+  it("mounts the first pages, not the last, in LTR", () => {
+    const { container } = render(
+      <ComicViewer pages={BOOK} direction="ltr" {...SINGLE} />,
+    );
+    expect(mountedPages(container)).toEqual(["/1.jpg", "/2.jpg", "/3.jpg"]);
+  });
+
+  it("follows the reader forward in an LTR spread with an odd page count", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <ComicViewer pages={BOOK.slice(0, 9)} direction="ltr" />,
+    );
+    expect(mountedPages(container)).toEqual(BOOK.slice(0, 6));
+
+    await user.click(screen.getByLabelText("Next page"));
+    expect(mountedPages(container)).toEqual(BOOK.slice(0, 8));
+  });
+
+  it("lazy-loads thumbnails", async () => {
+    const user = userEvent.setup();
+    render(<ComicViewer pages={PAGES} />);
+    await user.click(screen.getByRole("button", { name: "Thumbnails" }));
+    for (const img of screen.getAllByRole("img", { name: /^Page / })) {
+      expect(img).toHaveAttribute("loading", "lazy");
+    }
+  });
+
+  it("still renders every page given as a render function", () => {
+    render(
+      <ComicViewer
+        pages={BOOK.map((src) => ({ className }) => (
+          <p className={className}>{src}</p>
+        ))}
+      />,
+    );
+    for (const src of BOOK) expect(screen.getByText(src)).toBeInTheDocument();
+  });
+});
+
+describe("LTR", () => {
+  it("turns forward with the next button", async () => {
+    const user = userEvent.setup();
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <ComicViewer
+        pages={PAGES}
+        direction="ltr"
+        {...SINGLE}
+        onChangeCurrentPage={onChangeCurrentPage}
+      />,
+    );
+    await user.click(screen.getByLabelText("Next page"));
+    expect(onChangeCurrentPage).toHaveBeenCalledWith(1);
+  });
+
+  it("turns forward with ArrowRight and back with ArrowLeft", async () => {
+    const user = userEvent.setup();
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <ComicViewer
+        pages={PAGES}
+        direction="ltr"
+        {...SINGLE}
+        onChangeCurrentPage={onChangeCurrentPage}
+      />,
+    );
+    await user.keyboard("{ArrowRight}");
+    expect(onChangeCurrentPage).toHaveBeenLastCalledWith(1);
+    await user.keyboard("{ArrowLeft}");
+    expect(onChangeCurrentPage).toHaveBeenLastCalledWith(0);
+  });
+
+  it("turns forward with ArrowLeft in RTL", async () => {
+    const user = userEvent.setup();
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <ComicViewer
+        pages={PAGES}
+        {...SINGLE}
+        onChangeCurrentPage={onChangeCurrentPage}
+      />,
+    );
+    await user.keyboard("{ArrowLeft}");
+    expect(onChangeCurrentPage).toHaveBeenCalledWith(1);
+  });
+});
+
 describe("sizing", () => {
   afterEach(() => {
     vi.restoreAllMocks();
