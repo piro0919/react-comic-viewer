@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ComicViewer } from "../src/lib";
@@ -282,6 +282,120 @@ describe("LTR", () => {
     );
     await user.keyboard("{ArrowLeft}");
     expect(onChangeCurrentPage).toHaveBeenCalledWith(1);
+  });
+});
+
+describe("keyboard", () => {
+  it("ignores keys typed into a field elsewhere on the page", () => {
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <>
+        <input aria-label="search" />
+        <div contentEditable data-testid="note" />
+        <ComicViewer
+          pages={PAGES}
+          {...SINGLE}
+          onChangeCurrentPage={onChangeCurrentPage}
+        />
+      </>,
+    );
+    fireEvent.keyDown(screen.getByLabelText("search"), { key: "ArrowLeft" });
+    fireEvent.keyDown(screen.getByTestId("note"), { key: "ArrowLeft" });
+    expect(onChangeCurrentPage).not.toHaveBeenCalled();
+  });
+
+  it("ignores keys held with a modifier", () => {
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <ComicViewer
+        pages={PAGES}
+        {...SINGLE}
+        onChangeCurrentPage={onChangeCurrentPage}
+      />,
+    );
+    for (const modifier of ["altKey", "ctrlKey", "metaKey", "shiftKey"]) {
+      fireEvent.keyDown(window, { key: "ArrowLeft", [modifier]: true });
+    }
+    expect(onChangeCurrentPage).not.toHaveBeenCalled();
+  });
+});
+
+describe("thumbnails dialog", () => {
+  it("is a labelled modal dialog that takes focus and gives it back", async () => {
+    const user = userEvent.setup();
+    render(<ComicViewer pages={PAGES} />);
+    const opener = screen.getByRole("button", { name: "Thumbnails" });
+    await user.click(opener);
+
+    const dialog = screen.getByRole("dialog", { name: "Thumbnails" });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(screen.getByRole("button", { name: "Close" })).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+  });
+
+  it("keeps Tab inside the dialog", async () => {
+    const user = userEvent.setup();
+    render(<ComicViewer pages={["/1.jpg"]} />);
+    await user.click(screen.getByRole("button", { name: "Thumbnails" }));
+    const close = screen.getByRole("button", { name: "Close" });
+    const thumbnail = screen.getByRole("button", { name: /^Page 1/ });
+
+    await user.tab();
+    expect(thumbnail).toHaveFocus();
+    await user.tab();
+    expect(close).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(thumbnail).toHaveFocus();
+  });
+
+  it("does not turn pages behind the dialog", async () => {
+    const user = userEvent.setup();
+    const onChangeCurrentPage = vi.fn();
+    render(
+      <ComicViewer pages={PAGES} onChangeCurrentPage={onChangeCurrentPage} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Thumbnails" }));
+    await user.keyboard("{ArrowLeft}");
+    expect(onChangeCurrentPage).not.toHaveBeenCalled();
+  });
+});
+
+describe("accessible names", () => {
+  it("labels the page slider", async () => {
+    const user = userEvent.setup();
+    render(<ComicViewer pages={PAGES} />);
+    await user.click(screen.getByRole("button", { name: "Move" }));
+    expect(screen.getByRole("slider", { name: "Page" })).toBeInTheDocument();
+  });
+
+  it("takes them from the text prop", async () => {
+    const user = userEvent.setup();
+    render(
+      <ComicViewer
+        pages={PAGES}
+        {...SINGLE}
+        initialCurrentPage={1}
+        onClickCenter={() => {}}
+        text={{
+          centerAction: "メニュー",
+          close: "閉じる",
+          nextPage: "次へ",
+          pageSlider: "ページ",
+          prevPage: "前へ",
+        }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "次へ" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "前へ" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "メニュー" }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Thumbnails" }));
+    expect(screen.getByRole("button", { name: "閉じる" })).toBeInTheDocument();
   });
 });
 

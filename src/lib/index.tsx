@@ -1,10 +1,12 @@
 import {
   type MouseEventHandler,
   type ReactElement,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type SyntheticEvent,
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -106,6 +108,24 @@ const MIN_HEIGHT = 440;
  * reader gets near them.
  */
 const EAGER_TURNS = 2;
+
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  if (
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  ) {
+    return true;
+  }
+  return (
+    target.isContentEditable ||
+    target.closest('[contenteditable]:not([contenteditable="false"])') !== null
+  );
+}
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function useOnClickOutside(
   ref: { current: HTMLElement | null },
@@ -246,6 +266,26 @@ export type ComicViewerClassNames = Partial<
   Record<ComicViewerClassNameKey, string>
 > & { [key: string]: string | undefined };
 
+export type ComicViewerText = {
+  /** Accessible name of the center button. Default "Center action". */
+  centerAction?: string;
+  /** Accessible name of the button that closes the thumbnails. Default "Close". */
+  close?: string;
+  /** Accessible name of the full screen close button. Default "Exit full screen". */
+  exitFullScreen?: string;
+  expansion?: string;
+  fullScreen?: string;
+  move?: string;
+  /** Accessible name of the next page button. Default "Next page". */
+  nextPage?: string;
+  normal?: string;
+  /** Accessible name of the page slider. Default "Page". */
+  pageSlider?: string;
+  /** Accessible name of the previous page button. Default "Previous page". */
+  prevPage?: string;
+  thumbnails?: string;
+};
+
 export type ComicViewerProps = {
   className?: ComicViewerClassNames;
   /** Controls the current page. Omit to let the viewer own it. */
@@ -265,13 +305,7 @@ export type ComicViewerProps = {
   pages: Array<PageRenderer | ReactNode | string>;
   showPageIndicator?: boolean;
   switchingRatio?: number;
-  text?: {
-    expansion?: string;
-    fullScreen?: string;
-    move?: string;
-    normal?: string;
-    thumbnails?: string;
-  };
+  text?: ComicViewerText;
 };
 
 export function ComicViewer({
@@ -292,10 +326,16 @@ export function ComicViewer({
   text = {},
 }: ComicViewerProps): ReactElement {
   const {
+    centerAction: centerActionText = "Center action",
+    close: closeText = "Close",
+    exitFullScreen: exitFullScreenText = "Exit full screen",
     expansion: expansionText = "Expansion",
     fullScreen: fullScreenText = "Full screen",
     move: moveText = "Move",
+    nextPage: nextPageText = "Next page",
     normal: normalText = "Normal",
+    pageSlider: pageSliderText = "Page",
+    prevPage: prevPageText = "Previous page",
     thumbnails: thumbnailsText = "Thumbnails",
   } = text;
 
@@ -335,6 +375,8 @@ export function ComicViewer({
     null,
   );
   const thumbnailsRef = useRef<HTMLDivElement>(null);
+  const thumbnailsCloseRef = useRef<HTMLButtonElement>(null);
+  const thumbnailsTitleId = useId();
 
   // Fullscreen handlers
   const enterFullScreen = useCallback(() => {
@@ -482,9 +524,17 @@ export function ComicViewer({
     prevIsSingleView.current = isSingleView;
   }, [isSingleView, setCurrentPage]);
 
-  // Keyboard navigation
+  // Keyboard navigation. It listens on the window so that a viewer filling the
+  // page needs no focus, but leaves keys alone while the reader is typing
+  // elsewhere on the page or using a shortcut.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (isEditableTarget(e.target)) return;
+      if (showThumbnails) {
+        if (e.key === "Escape") setShowThumbnails(false);
+        return;
+      }
       if (e.key === "ArrowLeft") {
         isRtl ? goNext() : goPrev();
       } else if (e.key === "ArrowRight") {
@@ -496,7 +546,40 @@ export function ComicViewer({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isRtl, goNext, goPrev, isFullScreen, exitFullScreen]);
+  }, [isRtl, goNext, goPrev, isFullScreen, exitFullScreen, showThumbnails]);
+
+  // Thumbnails dialog: move focus in on open, give it back on close.
+  useEffect(() => {
+    if (!showThumbnails) return;
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    thumbnailsCloseRef.current?.focus();
+    return () => {
+      previous?.focus();
+    };
+  }, [showThumbnails]);
+
+  // Keep Tab inside the thumbnails dialog while it is open.
+  const handleThumbnailsKeyDown = useCallback(
+    (e: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (e.key !== "Tab") return;
+      const focusables =
+        e.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [],
+  );
 
   // Which pages to fetch. `currentPage` counts in reading order in both
   // directions, while `pages` is reversed in LTR, so an index into `pages` has
@@ -620,7 +703,7 @@ export function ComicViewer({
         {canGoNext && (
           <button
             type="button"
-            aria-label="Next page"
+            aria-label={nextPageText}
             className={`${styles.navigationButton} ${
               isRtl
                 ? styles.navigationButtonNext
@@ -639,7 +722,7 @@ export function ComicViewer({
         {onClickCenter && (
           <button
             type="button"
-            aria-label="Center action"
+            aria-label={centerActionText}
             className={`${styles.centerButton} ${
               className?.centerButton ?? ""
             }`}
@@ -650,7 +733,7 @@ export function ComicViewer({
         {canGoPrev && (
           <button
             type="button"
-            aria-label="Previous page"
+            aria-label={prevPageText}
             className={`${styles.navigationButton} ${
               isRtl
                 ? styles.navigationButtonPrev
@@ -680,6 +763,7 @@ export function ComicViewer({
       {isFullScreen
         ? showUI && (
             <button
+              aria-label={exitFullScreenText}
               className={`${styles.closeButton} ${className?.closeButton ?? ""}`}
               onClick={() => {
                 setSwitchingFullScreen(true);
@@ -702,6 +786,7 @@ export function ComicViewer({
                   }`}
                 >
                   <input
+                    aria-label={pageSliderText}
                     type="range"
                     min={1}
                     max={rangeMax}
@@ -792,13 +877,19 @@ export function ComicViewer({
         <div className={styles.thumbnailsOverlay}>
           <div
             ref={thumbnailsRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={thumbnailsTitleId}
             className={`${styles.thumbnailsContainer} ${
               className?.thumbnailsContainer ?? ""
             }`}
+            onKeyDown={handleThumbnailsKeyDown}
           >
             <div className={styles.thumbnailsHeader}>
-              <span>{thumbnailsText}</span>
+              <span id={thumbnailsTitleId}>{thumbnailsText}</span>
               <button
+                ref={thumbnailsCloseRef}
+                aria-label={closeText}
                 className={styles.thumbnailsCloseButton}
                 onClick={() => setShowThumbnails(false)}
                 type="button"
