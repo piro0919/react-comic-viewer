@@ -62,8 +62,56 @@ export default App;
 | onTryMoveNextPage   | `(nextPage: number) => void`                               | -       | Fired before moving forward                           |
 | onTryMovePrevPage   | `(prevPage: number) => void`                               | -       | Fired before moving back                              |
 | onClickCenter       | `MouseEventHandler<HTMLButtonElement>`                     | -       | Callback when center area is clicked                 |
-| className           | `Partial<Record<string, string>>`                          | -       | Custom class names for styling                       |
-| text                | `{ expansion?, fullScreen?, move?, normal?, thumbnails? }` | -       | Custom text for UI buttons                           |
+| className           | `ComicViewerClassNames`                                    | -       | Custom class names per element. See below            |
+| text                | `ComicViewerText`                                          | -       | Custom text for buttons and accessible names. See below |
+
+### `className`
+
+Extra class names, keyed by element: `wrapper`, `viewer`, `pagesWrapper`,
+`page`, `img`, `nextNavigationButton`, `prevNavigationButton`, `centerButton`,
+`pageIndicator`, `closeButton`, `controller`, `mainController`,
+`subController`, `scaleController`, `rangeInput`, `expansionControlButton`,
+`fullScreenControlButton`, `showMoveControlButton`, `thumbnailsControlButton`,
+`thumbnailsContainer`, `thumbnailItem`.
+
+### `text`
+
+| Key            | Default              | Used for                                   |
+| -------------- | -------------------- | ------------------------------------------ |
+| expansion      | `"Expansion"`        | Expansion button                           |
+| normal         | `"Normal"`           | Expansion button while expanded            |
+| fullScreen     | `"Full screen"`      | Full screen button                         |
+| move           | `"Move"`             | Move button                                |
+| thumbnails     | `"Thumbnails"`       | Thumbnails button and dialog title         |
+| nextPage       | `"Next page"`        | Accessible name of the next page button    |
+| prevPage       | `"Previous page"`    | Accessible name of the previous page button |
+| centerAction   | `"Center action"`    | Accessible name of the center button       |
+| exitFullScreen | `"Exit full screen"` | Accessible name of the full screen close button |
+| close          | `"Close"`            | Accessible name of the thumbnails close button |
+| pageSlider     | `"Page"`             | Accessible name of the page slider         |
+
+## Sizing
+
+The viewer takes the width of its container, measured with a ResizeObserver, so
+it fits a sidebar or a modal as well as the full page. Its height follows the
+viewport: the viewport height minus 95px, between 440px and 840px, or the full
+viewport height when expanded.
+
+## Theming
+
+| Custom property                       | Default | Applies to                 |
+| ------------------------------------- | ------- | -------------------------- |
+| `--comic-viewer-navigation-icon-color` | `#888`  | Next/previous page chevrons |
+| `--comic-viewer-navigation-icon-size`  | `64px`  | Next/previous page chevrons |
+
+Set them on the viewer's `wrapper` class or any ancestor.
+
+## Loading
+
+Only the current page and the pages within two turns of it are fetched. The
+ones ahead double as the preload, so the next page is already decoded when the
+reader turns to it. A page stays loaded once it has been fetched. Thumbnails
+use `loading="lazy"`.
 
 ## Controlled mode
 
@@ -113,7 +161,12 @@ The function is called during render, so it may not use hooks.
 | ----------- | ------------------------------------- |
 | Arrow Left  | Next page (RTL) / Previous page (LTR) |
 | Arrow Right | Previous page (RTL) / Next page (LTR) |
-| Escape      | Exit fullscreen                       |
+| Escape      | Exit fullscreen / close thumbnails    |
+
+The keys are read on the window, so a full-page viewer needs no focus. They are
+ignored while focus is in an input, textarea, select or contenteditable
+element, and while Alt, Ctrl, Meta or Shift is held. While the thumbnails are
+open, focus stays inside them and the arrow keys do not turn pages.
 
 ## Touch Gestures
 
