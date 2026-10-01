@@ -563,9 +563,9 @@ export function ComicViewer({
             onClick={goNext}
           >
             {isRtl ? (
-              <BiChevronLeft color="#888" size={64} />
+              <BiChevronLeft className={styles.navigationIcon} />
             ) : (
-              <BiChevronRight color="#888" size={64} />
+              <BiChevronRight className={styles.navigationIcon} />
             )}
           </button>
         )}
@@ -593,9 +593,9 @@ export function ComicViewer({
             onClick={goPrev}
           >
             {isRtl ? (
-              <BiChevronRight color="#888" size={64} />
+              <BiChevronRight className={styles.navigationIcon} />
             ) : (
-              <BiChevronLeft color="#888" size={64} />
+              <BiChevronLeft className={styles.navigationIcon} />
             )}
           </button>
         )}

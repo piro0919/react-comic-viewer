@@ -311,3 +311,14 @@
   position: absolute;
   right: 4px;
 }
+
+/*
+ * The page-turn chevrons. Override the custom properties on the viewer or any
+ * ancestor to restyle them; the fallbacks are the original look.
+ */
+.navigationIcon {
+  color: var(--comic-viewer-navigation-icon-color, #888);
+  flex-shrink: 0;
+  height: var(--comic-viewer-navigation-icon-size, 64px);
+  width: var(--comic-viewer-navigation-icon-size, 64px);
+}
