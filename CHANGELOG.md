@@ -2,7 +2,7 @@
 
 Earlier releases, up to 1.1.3, are recorded in the git history and on npm.
 
-## Unreleased
+## 1.3.0 - 2026-10-03
 
 ### Added
 
