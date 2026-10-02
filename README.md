@@ -177,6 +177,62 @@ open, focus stays inside them and the arrow keys do not turn pages.
 | Single tap  | Toggle UI visibility |
 | Double tap  | Toggle zoom (2x)     |
 
+## Web Component
+
+For pages without React, the package also ships a `<comic-viewer>` custom
+element. It is the same component running on Preact, with its CSS included, so
+it needs nothing else: about 19 kB gzipped.
+
+```html
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/react-comic-viewer/dist/web-component.js"
+></script>
+
+<comic-viewer
+  pages='["page1.jpg", "page2.jpg", "page3.jpg"]'
+  show-page-indicator="true"
+></comic-viewer>
+```
+
+With a bundler, import it once instead of the script tag:
+
+```js
+import "react-comic-viewer/web-component";
+```
+
+Props become attributes in kebab-case. `pages`, `text` and `className` take
+JSON, booleans take `"true"` or `"false"` (an empty attribute is ignored), and
+everything can also be set as a property from JavaScript:
+
+```js
+const viewer = document.querySelector("comic-viewer");
+viewer.pages = ["page1.jpg", "page2.jpg"];
+```
+
+`pages` accepts image URLs only; React nodes and renderers need the React
+component.
+
+Callbacks are dispatched as events, named after the prop without `on` and
+lowercased, with the argument in `detail`:
+
+| Event               | `detail`                         |
+| ------------------- | -------------------------------- |
+| `changecurrentpage` | The new page index               |
+| `changeexpansion`   | The new expansion state          |
+| `trymovenextpage`   | The page about to be moved to    |
+| `trymoveprevpage`   | The page about to be moved to    |
+| `clickcenter`       | The click event                  |
+
+`clickcenter` needs `center-action="true"`, which renders the center button
+that the React component shows when `onClickCenter` is passed.
+
+```js
+viewer.addEventListener("changecurrentpage", (event) => {
+  console.log(event.detail);
+});
+```
+
 ## Browser Support
 
 [Full Screen API](https://caniuse.com/fullscreen) is not supported on iOS.

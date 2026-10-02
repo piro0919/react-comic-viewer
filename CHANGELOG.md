@@ -2,6 +2,15 @@
 
 Earlier releases, up to 1.1.3, are recorded in the git history and on npm.
 
+## Unreleased
+
+### Added
+
+- A `<comic-viewer>` web component at `react-comic-viewer/web-component`, for
+  pages without React. It runs the same component on Preact and carries its
+  own CSS, so one script tag is enough: about 19 kB gzipped. Callbacks are
+  dispatched as DOM events.
+
 ## 1.2.0 - 2026-10-01
 
 ### Fixed

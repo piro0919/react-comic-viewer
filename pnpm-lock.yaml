@@ -21,6 +21,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.5.14
         version: 2.5.14
+      '@r2wc/react-to-web-component':
+        specifier: ^2.1.1
+        version: 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: 6.9.1
         version: 6.9.1
@@ -54,6 +57,9 @@ importers:
       next:
         specifier: ^15.5.26
         version: 15.5.26(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      preact:
+        specifier: ^11.0.0
+        version: 11.0.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -687,6 +693,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@r2wc/core@1.3.1':
+    resolution: {integrity: sha512-x9nMthXsTjqr1alE+boX1Zuzqb6/oFi4wAOdWaWcWKcrwq9M/PATK74c3DFJfRnUOkYWPlsz0e4CsFBXJGStSA==}
+
+  '@r2wc/react-to-web-component@2.1.1':
+    resolution: {integrity: sha512-AXsIdjxK9ALv0ySWjVadUg3uJ5nS8L4H8eZMYaaWuM+9LNj9DP/r4+sMjI+6jZwb7/FqwxRPHQUq8yimQwBfOA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
   '@rollup/rollup-android-arm-eabi@4.62.5':
     resolution: {integrity: sha512-jfkGfTwhQpsiSckPF8r9bU3pn3vyd72NlWaO+TgEO6WPSDnUhXzrNYCHBMOYj0ACaUgjm6eERLF+XV9a6RstoA==}
     cpu: [arm]
@@ -1319,6 +1334,14 @@ packages:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
     engines: {node: ^10 || ^12 || >=14}
 
+  preact@11.0.0:
+    resolution: {integrity: sha512-LRTLKuSe6VYPhvBDjwFaX+nuZnpsw6IN2GSboisAvhGsncylBmrbDCERhgKDn6yP2mAwbGvsB5OVyTe33M8gBg==}
+    peerDependencies:
+      preact-render-to-string: '>=6.7.0'
+    peerDependenciesMeta:
+      preact-render-to-string:
+        optional: true
+
   pretty-format@27.5.1:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -1927,6 +1950,14 @@ snapshots:
   '@next/swc-win32-x64-msvc@15.5.26':
     optional: true
 
+  '@r2wc/core@1.3.1': {}
+
+  '@r2wc/react-to-web-component@2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@r2wc/core': 1.3.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@rollup/rollup-android-arm-eabi@4.62.5':
     optional: true
 
@@ -2493,6 +2524,8 @@ snapshots:
       nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  preact@11.0.0: {}
 
   pretty-format@27.5.1:
     dependencies:

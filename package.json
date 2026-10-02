@@ -11,6 +11,7 @@
   "description": "Comic viewer and manga viewer component for React",
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "@r2wc/react-to-web-component": "^2.1.1",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -19,13 +20,14 @@
     "@types/react-dom": "^18.3.7",
     "@vercel/analytics": "2.0.1",
     "esbuild": "^0.28.2",
+    "esbuild-css-modules-plugin": "^3.1.5",
     "jsdom": "^25.0.1",
     "next": "^15.5.26",
+    "preact": "^11.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
-    "vitest": "^2.1.9",
-    "esbuild-css-modules-plugin": "^3.1.5"
+    "vitest": "^2.1.9"
   },
   "exports": {
     ".": {
@@ -33,7 +35,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles.css": "./dist/index.css"
+    "./styles.css": "./dist/index.css",
+    "./web-component": {
+      "types": "./dist/web-component.d.ts",
+      "import": "./dist/web-component.js"
+    }
   },
   "files": [
     "dist"
@@ -85,7 +91,8 @@
     "typecheck": "tsc --noEmit"
   },
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/web-component.js"
   ],
   "types": "dist/index.d.ts",
   "version": "1.2.0"
