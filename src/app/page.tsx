@@ -192,6 +192,15 @@ export default function Home() {
         </a>
         {" | "}
         <a
+          href="https://buymeacoffee.com/piro0919"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#888", textDecoration: "none" }}
+        >
+          Buy Me a Coffee
+        </a>
+        {" | "}
+        <a
           href="https://www.npmjs.com/package/react-comic-viewer"
           target="_blank"
           rel="noopener noreferrer"
