@@ -21,6 +21,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.5.15
         version: 2.5.15
+      '@piro0919/biome-config':
+        specifier: github:piro0919/biome-config#v1.0.0
+        version: https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f(@biomejs/biome@2.5.15)
       '@r2wc/react-to-web-component':
         specifier: ^2.1.1
         version: 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -692,6 +695,12 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@piro0919/biome-config@https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f}
+    version: 1.0.0
+    peerDependencies:
+      '@biomejs/biome': ^2.1.0
 
   '@r2wc/core@1.3.1':
     resolution: {integrity: sha512-x9nMthXsTjqr1alE+boX1Zuzqb6/oFi4wAOdWaWcWKcrwq9M/PATK74c3DFJfRnUOkYWPlsz0e4CsFBXJGStSA==}
@@ -1949,6 +1958,10 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@15.5.27':
     optional: true
+
+  '@piro0919/biome-config@https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f(@biomejs/biome@2.5.15)':
+    dependencies:
+      '@biomejs/biome': 2.5.15
 
   '@r2wc/core@1.3.1': {}
 
