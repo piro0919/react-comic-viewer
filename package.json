@@ -23,7 +23,7 @@
     "esbuild": "^0.28.2",
     "esbuild-css-modules-plugin": "^3.1.5",
     "jsdom": "^25.0.1",
-    "next": "^15.5.27",
+    "next": "^15.5.28",
     "preact": "^11.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
