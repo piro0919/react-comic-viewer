@@ -10,7 +10,7 @@
   },
   "description": "Comic viewer and manga viewer component for React",
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.3",
     "@piro0919/biome-config": "github:piro0919/biome-config#v1.1.0",
     "@r2wc/react-to-web-component": "^2.1.1",
     "@testing-library/jest-dom": "6.9.1",
@@ -24,7 +24,7 @@
     "esbuild-css-modules-plugin": "^3.1.5",
     "jsdom": "^25.0.1",
     "next": "^15.5.28",
-    "preact": "^11.0.1",
+    "preact": "^11.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
