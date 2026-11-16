@@ -47,23 +47,23 @@ export default App;
 
 ## Props
 
-| Prop                | Type                                                       | Default | Description                                          |
-| ------------------- | ---------------------------------------------------------- | ------- | ---------------------------------------------------- |
-| pages               | `Array<string \| ReactNode \| PageRenderer>`               | -       | **Required.** Image URLs, React nodes, or renderers   |
-| direction           | `"rtl" \| "ltr"`                                           | `"rtl"` | Reading direction                                    |
-| currentPage         | `number`                                                   | -       | Controls the current page. See Controlled mode        |
-| isExpansion         | `boolean`                                                  | -       | Controls the expansion state. See Controlled mode     |
-| initialCurrentPage  | `number`                                                   | `0`     | Initial page index, used when uncontrolled            |
-| initialIsExpansion  | `boolean`                                                  | `false` | Initial expansion state, used when uncontrolled       |
-| showPageIndicator   | `boolean`                                                  | `false` | Show current page indicator                          |
-| switchingRatio      | `number`                                                   | `1`     | Aspect ratio threshold for single/double page switch |
-| onChangeCurrentPage | `(currentPage: number) => void`                            | -       | Callback when page changes                           |
-| onChangeExpansion   | `(isExpansion: boolean) => void`                           | -       | Callback when expansion state changes                |
-| onTryMoveNextPage   | `(nextPage: number) => void`                               | -       | Fired before moving forward                           |
-| onTryMovePrevPage   | `(prevPage: number) => void`                               | -       | Fired before moving back                              |
-| onClickCenter       | `MouseEventHandler<HTMLButtonElement>`                     | -       | Callback when center area is clicked                 |
-| className           | `ComicViewerClassNames`                                    | -       | Custom class names per element. See below            |
-| text                | `ComicViewerText`                                          | -       | Custom text for buttons and accessible names. See below |
+| Prop                | Type                                         | Default | Description                                             |
+| ------------------- | -------------------------------------------- | ------- | ------------------------------------------------------- |
+| pages               | `Array<string \| ReactNode \| PageRenderer>` | -       | **Required.** Image URLs, React nodes, or renderers     |
+| direction           | `"rtl" \| "ltr"`                             | `"rtl"` | Reading direction                                       |
+| currentPage         | `number`                                     | -       | Controls the current page. See Controlled mode          |
+| isExpansion         | `boolean`                                    | -       | Controls the expansion state. See Controlled mode       |
+| initialCurrentPage  | `number`                                     | `0`     | Initial page index, used when uncontrolled              |
+| initialIsExpansion  | `boolean`                                    | `false` | Initial expansion state, used when uncontrolled         |
+| showPageIndicator   | `boolean`                                    | `false` | Show current page indicator                             |
+| switchingRatio      | `number`                                     | `1`     | Aspect ratio threshold for single/double page switch    |
+| onChangeCurrentPage | `(currentPage: number) => void`              | -       | Callback when page changes                              |
+| onChangeExpansion   | `(isExpansion: boolean) => void`             | -       | Callback when expansion state changes                   |
+| onTryMoveNextPage   | `(nextPage: number) => void`                 | -       | Fired before moving forward                             |
+| onTryMovePrevPage   | `(prevPage: number) => void`                 | -       | Fired before moving back                                |
+| onClickCenter       | `MouseEventHandler<HTMLButtonElement>`       | -       | Callback when center area is clicked                    |
+| className           | `ComicViewerClassNames`                      | -       | Custom class names per element. See below               |
+| text                | `ComicViewerText`                            | -       | Custom text for buttons and accessible names. See below |
 
 ### `className`
 
@@ -76,19 +76,19 @@ Extra class names, keyed by element: `wrapper`, `viewer`, `pagesWrapper`,
 
 ### `text`
 
-| Key            | Default              | Used for                                   |
-| -------------- | -------------------- | ------------------------------------------ |
-| expansion      | `"Expansion"`        | Expansion button                           |
-| normal         | `"Normal"`           | Expansion button while expanded            |
-| fullScreen     | `"Full screen"`      | Full screen button                         |
-| move           | `"Move"`             | Move button                                |
-| thumbnails     | `"Thumbnails"`       | Thumbnails button and dialog title         |
-| nextPage       | `"Next page"`        | Accessible name of the next page button    |
-| prevPage       | `"Previous page"`    | Accessible name of the previous page button |
-| centerAction   | `"Center action"`    | Accessible name of the center button       |
+| Key            | Default              | Used for                                        |
+| -------------- | -------------------- | ----------------------------------------------- |
+| expansion      | `"Expansion"`        | Expansion button                                |
+| normal         | `"Normal"`           | Expansion button while expanded                 |
+| fullScreen     | `"Full screen"`      | Full screen button                              |
+| move           | `"Move"`             | Move button                                     |
+| thumbnails     | `"Thumbnails"`       | Thumbnails button and dialog title              |
+| nextPage       | `"Next page"`        | Accessible name of the next page button         |
+| prevPage       | `"Previous page"`    | Accessible name of the previous page button     |
+| centerAction   | `"Center action"`    | Accessible name of the center button            |
 | exitFullScreen | `"Exit full screen"` | Accessible name of the full screen close button |
-| close          | `"Close"`            | Accessible name of the thumbnails close button |
-| pageSlider     | `"Page"`             | Accessible name of the page slider         |
+| close          | `"Close"`            | Accessible name of the thumbnails close button  |
+| pageSlider     | `"Page"`             | Accessible name of the page slider              |
 
 ## Sizing
 
@@ -99,8 +99,8 @@ viewport height when expanded.
 
 ## Theming
 
-| Custom property                       | Default | Applies to                 |
-| ------------------------------------- | ------- | -------------------------- |
+| Custom property                        | Default | Applies to                  |
+| -------------------------------------- | ------- | --------------------------- |
 | `--comic-viewer-navigation-icon-color` | `#888`  | Next/previous page chevrons |
 | `--comic-viewer-navigation-icon-size`  | `64px`  | Next/previous page chevrons |
 
@@ -146,11 +146,9 @@ have applied to its own `<img>`. Use it to bring your own image element, for
 lazy loading or a custom placeholder.
 
 ```tsx
-const pages: PageRenderer[] = urls.map(
-  (url) =>
-    ({ className }) =>
-      <img src={url} alt="" className={className} loading="lazy" />,
-);
+const pages: PageRenderer[] = urls.map((url) => ({ className }) => (
+  <img src={url} alt="" className={className} loading="lazy" />
+));
 ```
 
 The function is called during render, so it may not use hooks.
@@ -216,13 +214,13 @@ component.
 Callbacks are dispatched as events, named after the prop without `on` and
 lowercased, with the argument in `detail`:
 
-| Event               | `detail`                         |
-| ------------------- | -------------------------------- |
-| `changecurrentpage` | The new page index               |
-| `changeexpansion`   | The new expansion state          |
-| `trymovenextpage`   | The page about to be moved to    |
-| `trymoveprevpage`   | The page about to be moved to    |
-| `clickcenter`       | The click event                  |
+| Event               | `detail`                      |
+| ------------------- | ----------------------------- |
+| `changecurrentpage` | The new page index            |
+| `changeexpansion`   | The new expansion state       |
+| `trymovenextpage`   | The page about to be moved to |
+| `trymoveprevpage`   | The page about to be moved to |
+| `clickcenter`       | The click event               |
 
 `clickcenter` needs `center-action="true"`, which renders the center button
 that the React component shows when `onClickCenter` is passed.
