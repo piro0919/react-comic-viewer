@@ -1,7 +1,8 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  esbuild: { jsx: "automatic" },
+  // vite 8 transforms with oxc, not esbuild. tsconfig.json keeps jsx: "preserve" for the editor
+  oxc: { jsx: { runtime: "automatic" } },
   test: {
     environment: "jsdom",
     globals: true,
